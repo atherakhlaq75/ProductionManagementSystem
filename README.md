@@ -1,75 +1,128 @@
-# EduSphere — Student Management System
+# GarmentFlow — Production Order Management System
 
-A modern, Apple-inspired Student Management System built with **FastAPI**, **PostgreSQL**, and **Jinja2** templates. Designed for schools and educational institutions to manage students, teachers, classes, subjects, and weekly timetables.
+A web-based Production Order Management System built for **Croydon Kowloon Designs Ltd. (CKDL)** using **FastAPI**, **PostgreSQL**, and **Jinja2** templates. Designed to digitise and centralise the full garment manufacturing workflow — from customer order receipt through production scheduling to shipment and invoicing.
 
 ---
 
 ## Features
 
+### Admin Panel *(Administrators only)*
+
 | Module | Capabilities |
 |---|---|
-| **Dashboard** | Live stats, recent registrations, quick actions |
-| **Students** | Registration, profiles, class assignment, guardian info |
-| **Teachers** | Staff records, specialization, qualifications |
-| **Classes** | Grade/section management, occupancy tracking |
-| **Subjects** | Curriculum builder with codes and categories |
-| **Routine** | Weekly timetable scheduler with visual grid |
-| **Auth** | JWT cookie-based login, admin seeded on first run |
+| **Admin Dashboard** | Real-time counts for users, groups, customers, brands, styles, and lines. Quick-action shortcuts. |
+| **Customers** | Create and manage buyer profiles — contact details, country, payment terms, active/inactive status |
+| **Brands** | Register buyer brands linked to customers via many-to-many relationship |
+| **Garment Styles** | Full style specs — category, fabric, SAM, standard cost, season, gender, buyer style reference |
+| **Production Lines** | Register factory lines with capacity, supervisor, and operational status |
+| **Users** | Create, edit, deactivate accounts; classify as Admin or General User; assign to groups |
+| **Groups & Permissions** | Define permission groups with module-level flags (Orders / Productions / Shipments) |
+
+### User Panel *(General Users)*
+
+| Module | Capabilities |
+|---|---|
+| **Dashboard** | Overview of accessible transaction modules |
+| **Order Receipt** | Create and manage customer orders; full lifecycle status tracking |
+| **Production** | Schedule production runs against orders; track output, efficiency, and dates |
+| **Shipment / Invoice** | Create shipment invoices; capture shipping details, B/L number, ETD, ETA |
+
+---
+
+## Access Control
+
+The system enforces a strict two-portal authentication model:
+
+- **Admin login** → `/admin/login` — Administrators only. Grants access to master data and user administration.
+- **General login** → `/login` — General users only. Grants access to transaction modules based on group permissions.
+
+Admin credentials are rejected at the general login portal and vice versa. Module access for general users is controlled by **Permission Groups** assigned by the administrator.
+
+---
+
+## Auto-Generated Reference Numbers
+
+| Entity | Format | Example |
+|---|---|---|
+| Order | `ORD-YYYYMM####` | `ORD-2026050001` |
+| Production Run | `PRD-YYYYMM####` | `PRD-2026050001` |
+| Shipment Invoice | `INV-YYYYMM####` | `INV-2026050001` |
 
 ---
 
 ## Tech Stack
 
-- **Backend** — Python 3.11+, FastAPI 0.115, SQLAlchemy 2.0 (async)
-- **Database** — PostgreSQL 14+ via asyncpg driver
-- **Templates** — Jinja2 (server-side rendered HTML)
-- **Styling** — Custom CSS (Apple-inspired design system, no framework needed)
-- **Auth** — JWT tokens stored in HTTP-only cookies, bcrypt password hashing
+| Layer | Technology |
+|---|---|
+| **Backend** | Python 3.12, FastAPI 0.115.5 |
+| **Database** | PostgreSQL 14+ |
+| **ORM** | SQLAlchemy 2.0 (async) + asyncpg 0.30 driver |
+| **Auth** | JWT (python-jose) — HS256, HttpOnly cookies, 8-hour session |
+| **Password Hashing** | bcrypt 4.2 |
+| **Templating** | Jinja2 3.1 (server-side rendering) |
+| **Web Server** | Uvicorn (ASGI) with hot reload |
+| **Config** | Pydantic Settings + python-dotenv |
+| **Middleware** | Starlette BaseHTTPMiddleware (request-level access control) |
 
 ---
 
 ## Project Structure
 
 ```
-Student-Management/
+Order-Management/
 ├── app/
-│   ├── main.py               # FastAPI app, lifespan, router registration
-│   ├── config.py             # Settings from .env via pydantic-settings
-│   ├── database.py           # Async SQLAlchemy engine + session
-│   ├── dependencies.py       # Auth guards (login_required, get_current_user)
+│   ├── main.py                  # FastAPI app, middleware, lifespan, router registration
+│   ├── config.py                # Settings loaded from .env via pydantic-settings
+│   ├── database.py              # Async SQLAlchemy engine + session factory
+│   ├── dependencies.py          # Auth guards — login_required, require_admin_html
+│   ├── templates_config.py      # Shared Jinja2Templates instance with global helpers
 │   ├── models/
-│   │   ├── user.py           # Admin / staff users
-│   │   ├── student.py        # Student records
-│   │   ├── teacher.py        # Teacher records
-│   │   ├── class_.py         # Classes (Grade 10-A etc.)
-│   │   ├── subject.py        # Subjects + ClassSubject junction
-│   │   └── routine.py        # Weekly timetable slots
-│   ├── schemas/              # Pydantic v2 request/response models
+│   │   ├── user.py              # User accounts (admin / general); has_permission()
+│   │   ├── group.py             # Permission groups + UserGroup junction
+│   │   ├── customer.py          # Buyer profiles
+│   │   ├── brand.py             # Buyer brands + CustomerBrand junction
+│   │   ├── garment_style.py     # Style specifications (fabric, SAM, season, etc.)
+│   │   ├── production_line.py   # Factory production lines
+│   │   ├── order.py             # Customer orders (ORD-*)
+│   │   ├── production.py        # Production runs (PRD-*)
+│   │   └── shipment.py          # Shipment invoices (INV-*)
 │   ├── routers/
-│   │   ├── auth.py           # /login, /logout
-│   │   ├── dashboard.py      # /dashboard
-│   │   ├── students.py       # /students CRUD
-│   │   ├── teachers.py       # /teachers CRUD
-│   │   ├── classes.py        # /classes CRUD
-│   │   ├── subjects.py       # /subjects CRUD
-│   │   └── routines.py       # /routines CRUD
+│   │   ├── auth.py              # /login, /logout, /admin/login, /admin/logout
+│   │   ├── admin.py             # /admin — dashboard, users, groups CRUD
+│   │   ├── dashboard.py         # /dashboard — general user home
+│   │   ├── customers.py         # /customers CRUD
+│   │   ├── brands.py            # /brands CRUD
+│   │   ├── styles.py            # /styles CRUD
+│   │   ├── lines.py             # /lines CRUD
+│   │   ├── orders.py            # /orders CRUD
+│   │   ├── productions.py       # /productions CRUD
+│   │   └── shipments.py         # /shipments CRUD
 │   ├── services/
-│   │   └── auth_service.py   # JWT, bcrypt, admin seed
-│   ├── templates/            # Jinja2 HTML templates
-│   │   ├── base.html         # Sidebar layout
-│   │   ├── login.html        # Sign-in page
-│   │   ├── dashboard.html
-│   │   ├── students/         # list, form, detail
-│   │   ├── teachers/         # list, form, detail
-│   │   ├── classes/          # list, form
-│   │   ├── subjects/         # list, form
-│   │   └── routines/         # list, form
+│   │   └── auth_service.py      # JWT creation, bcrypt, admin seed on first run
+│   ├── templates/
+│   │   ├── base.html            # General user sidebar layout
+│   │   ├── login.html           # General user login (split-panel)
+│   │   ├── dashboard.html       # General user dashboard
+│   │   ├── admin/
+│   │   │   ├── base.html        # Admin panel dark sidebar layout
+│   │   │   ├── login.html       # Admin login portal
+│   │   │   ├── dashboard.html   # Admin dashboard with stats
+│   │   │   ├── users/           # list, form
+│   │   │   └── groups/          # list, form
+│   │   ├── orders/              # list, form, detail
+│   │   ├── productions/         # list, form, detail
+│   │   ├── shipments/           # list, form, detail
+│   │   ├── customers/           # list, form, detail
+│   │   ├── brands/              # list, form
+│   │   └── styles/              # list, form, detail
 │   └── static/
-│       ├── css/main.css      # Full Apple-inspired design system
-│       └── js/main.js        # Toast, confirm delete, stat animation
+│       ├── css/main.css         # Apple-inspired design system (responsive)
+│       ├── js/main.js           # Toast notifications, confirm-delete, animations
+│       └── img/ckdl-logo.svg    # CKDL brand logo
 ├── migrations/
-│   └── 001_init.sql          # Manual SQL (optional — app auto-creates tables)
-├── run.py                    # Entry point  →  python run.py
+│   ├── 001_init.sql             # Initial schema (optional — app auto-creates tables)
+│   └── 002_access_control.sql   # Groups + UserGroup tables
+├── run.py                       # Entry point  →  python run.py
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -83,195 +136,287 @@ Student-Management/
 
 - Python 3.11 or higher
 - PostgreSQL 14 or higher running locally
-- `pip` or `uv`
 
 ### 2. Create the database
 
 ```sql
 -- In psql or pgAdmin:
-CREATE DATABASE student_mgmt;
+CREATE DATABASE order_mgmt;
 ```
 
-### 3. Clone / copy the project
+### 3. Set up the project
 
 ```bash
-cd "C:\Python Development\Student-Management"
-```
+cd "C:\Python Development\Order-Management"
 
-### 4. Create a virtual environment
-
-```bash
+# Create virtual environment
 python -m venv venv
 
-# Windows
+# Activate — Windows
 venv\Scripts\activate
 
-# macOS / Linux
+# Activate — macOS / Linux
 source venv/bin/activate
-```
 
-### 5. Install dependencies
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 6. Configure environment
+### 4. Configure environment
 
 ```bash
-# Copy the example file
-copy .env.example .env        # Windows
-cp .env.example .env          # macOS/Linux
+# Windows
+copy .env.example .env
 
-# Edit .env with your database credentials
+# macOS / Linux
+cp .env.example .env
 ```
 
-**.env file:**
+Edit `.env` with your credentials:
+
 ```env
-DATABASE_URL=postgresql+asyncpg://postgres:yourpassword@localhost:5432/student_mgmt
+# Database
+DATABASE_URL=postgresql+asyncpg://postgres:yourpassword@localhost:5432/order_mgmt
+
+# JWT Secret — use a long random string in production
 SECRET_KEY=change-this-to-a-long-random-string
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=480
 
+# Default admin account (created automatically on first run)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin123
-ADMIN_EMAIL=admin@school.edu
+ADMIN_EMAIL=admin@ckdlbd.com
 
-APP_NAME=EduSphere
+# App settings
+APP_NAME=GarmentFlow
+APP_ENV=development
 DEBUG=True
 ```
 
-### 7. Run the application
+### 5. Run the application
 
 ```bash
 python run.py
 ```
 
-The app will:
-1. Auto-create all database tables on first run
-2. Seed the default admin user
-3. Start at **http://127.0.0.1:8000**
+On first run the application will automatically:
+1. Create all database tables
+2. Seed the default admin account
+3. Start at **http://127.0.0.1:8083**
 
-### 8. Login
+---
 
-Open **http://127.0.0.1:8000** in your browser.
+## Logging In
 
-| Field | Default Value |
+### Admin Panel
+
+| URL | `http://127.0.0.1:8083/admin/login` |
 |---|---|
-| Username | `admin` |
-| Password | `admin123` |
+| Username | `admin` *(or value from `.env`)* |
+| Password | `admin123` *(or value from `.env`)* |
 
-> Change these in your `.env` file before deploying.
+From the Admin Panel, create Permission Groups and assign General Users to them.
+
+### General Users
+
+| URL | `http://127.0.0.1:8083/login` |
+|---|---|
+| Username | *(created by admin)* |
+| Password | *(set by admin)* |
+
+> **Important:** Admin accounts cannot log in at the general login portal, and general user accounts cannot log in at the admin portal.
 
 ---
 
 ## URL Reference
 
+### Public
+
 | URL | Method | Description |
 |---|---|---|
 | `/` | GET | Redirect to dashboard |
-| `/login` | GET / POST | Sign in |
-| `/logout` | GET | Sign out |
-| `/dashboard` | GET | Stats overview |
-| `/students` | GET | Student list (search, filter) |
-| `/students/new` | GET / POST | Register student |
-| `/students/{id}` | GET | Student profile |
-| `/students/{id}/edit` | GET / POST | Edit student |
-| `/students/{id}/delete` | POST | Delete student |
-| `/teachers` | GET | Teacher list |
-| `/teachers/new` | GET / POST | Add teacher |
-| `/teachers/{id}` | GET | Teacher profile |
-| `/teachers/{id}/edit` | GET / POST | Edit teacher |
-| `/classes` | GET | Class cards with occupancy |
-| `/classes/new` | GET / POST | Create class |
-| `/classes/{id}/edit` | GET / POST | Edit class |
-| `/subjects` | GET | Subject list |
-| `/subjects/new` | GET / POST | Add subject |
-| `/subjects/{id}/edit` | GET / POST | Edit subject |
-| `/routines` | GET | Timetable grid + list |
-| `/routines/new` | GET / POST | Schedule period |
-| `/routines/{id}/edit` | GET / POST | Edit period |
+| `/login` | GET / POST | General user sign-in |
+| `/logout` | GET | General user sign-out |
+| `/admin/login` | GET / POST | Admin sign-in |
+| `/admin/logout` | GET | Admin sign-out |
 
----
+### Admin Panel
 
-## Auto-Generated IDs
-
-| Entity | Format | Example |
+| URL | Method | Description |
 |---|---|---|
-| Student | `SMS-YYYY-NNNN` | `SMS-2024-0001` |
-| Teacher | `TCH-YYYY-NNNN` | `TCH-2024-0001` |
+| `/admin/` | GET | Admin dashboard |
+| `/admin/users` | GET | User list |
+| `/admin/users/new` | GET / POST | Create user |
+| `/admin/users/{id}/edit` | GET / POST | Edit user |
+| `/admin/users/{id}/delete` | POST | Delete user |
+| `/admin/groups` | GET | Group list |
+| `/admin/groups/new` | GET / POST | Create group |
+| `/admin/groups/{id}/edit` | GET / POST | Edit group |
+| `/admin/groups/{id}/delete` | POST | Delete group |
+| `/customers` | GET | Customer list |
+| `/customers/new` | GET / POST | Add customer |
+| `/customers/{id}` | GET | Customer detail |
+| `/customers/{id}/edit` | GET / POST | Edit customer |
+| `/brands` | GET | Brand list |
+| `/brands/new` | GET / POST | Add brand |
+| `/brands/{id}/edit` | GET / POST | Edit brand |
+| `/styles` | GET | Garment style list |
+| `/styles/new` | GET / POST | Add style |
+| `/styles/{id}` | GET | Style detail |
+| `/styles/{id}/edit` | GET / POST | Edit style |
+| `/lines` | GET | Production line list |
+| `/lines/new` | GET / POST | Add line |
+| `/lines/{id}/edit` | GET / POST | Edit line |
+
+### Transaction Modules *(General Users)*
+
+| URL | Method | Description |
+|---|---|---|
+| `/dashboard` | GET | User dashboard |
+| `/orders` | GET | Order list (search, filter) |
+| `/orders/new` | GET / POST | Place new order |
+| `/orders/{id}` | GET | Order detail with productions & shipments |
+| `/orders/{id}/edit` | GET / POST | Edit order |
+| `/orders/{id}/delete` | POST | Delete order |
+| `/productions` | GET | Production list |
+| `/productions/new` | GET / POST | Schedule production run |
+| `/productions/{id}` | GET | Production detail |
+| `/productions/{id}/edit` | GET / POST | Edit production run |
+| `/productions/{id}/delete` | POST | Delete production run |
+| `/shipments` | GET | Shipment list |
+| `/shipments/new` | GET / POST | Create shipment invoice |
+| `/shipments/{id}` | GET | Shipment detail |
+| `/shipments/{id}/edit` | GET / POST | Edit shipment |
+| `/shipments/{id}/delete` | POST | Delete shipment |
 
 ---
 
 ## Database Schema
 
 ```
-users ──────────────────────────────────────────────────
-  id, username, email, hashed_password, is_admin
+users
+  id, username, email, full_name, hashed_password,
+  is_admin, is_active, created_at, updated_at
 
-teachers ───────────────────────────────────────────────
-  id, teacher_id, first_name, last_name, email,
-  specialization, qualification, join_date, status
+groups
+  id, group_code, group_name, description,
+  can_access_orders, can_access_productions, can_access_shipments,
+  is_active, created_at, updated_at
 
-classes ────────────────────────────────────────────────
-  id, name, section, grade_level, capacity,
-  class_teacher_id → teachers.id
+user_groups  (junction)
+  user_id → users.id
+  group_id → groups.id
 
-students ───────────────────────────────────────────────
-  id, student_id, first_name, last_name, email,
-  guardian_name, guardian_phone, class_id → classes.id,
-  enrollment_date, status, blood_group
+customers
+  id, customer_code, company_name, contact_person,
+  email, phone, country, city, address, payment_terms,
+  status, created_at, updated_at
 
-subjects ───────────────────────────────────────────────
-  id, code, name, credits, category
+brands
+  id, brand_code, brand_name, description, country_of_origin,
+  status, created_at, updated_at
 
-class_subjects (junction) ──────────────────────────────
-  class_id → classes.id
-  subject_id → subjects.id
-  teacher_id → teachers.id
+customer_brands  (junction)
+  customer_id → customers.id
+  brand_id → brands.id
 
-routines ───────────────────────────────────────────────
-  class_id → classes.id
-  subject_id → subjects.id
-  teacher_id → teachers.id
-  day_of_week, start_time, end_time, room_number
+garment_styles
+  id, style_no, style_name, description, category,
+  fabric_type, fabric_composition, season, gender,
+  brand_id → brands.id, customer_id → customers.id,
+  buyer_style_ref, unit_of_measure, standard_cost,
+  standard_minutes (SAM), status, created_at, updated_at
+
+production_lines
+  id, line_code, line_name, capacity_per_day,
+  supervisor, status, created_at, updated_at
+
+orders
+  id, order_no, po_number,
+  customer_id → customers.id,
+  style_id → garment_styles.id,
+  order_qty, unit_price, currency,
+  order_date, delivery_date, remarks,
+  status, created_at, updated_at
+
+productions
+  id, production_no,
+  order_id → orders.id,
+  line_id → production_lines.id,
+  planned_qty, planned_start, planned_end,
+  actual_start, actual_end,
+  output_qty, rejected_qty, remarks,
+  status, created_at, updated_at
+
+shipments
+  id, invoice_no,
+  order_id → orders.id,
+  shipment_date, shipped_qty, carton_count,
+  net_weight_kg, gross_weight_kg,
+  unit_price, currency,
+  port_of_loading, port_of_discharge,
+  vessel_name, bl_number, etd, eta,
+  remarks, status, created_at, updated_at
+```
+
+---
+
+## Order Lifecycle (Automatic Status Transitions)
+
+```
+Order created     →  pending
+Order confirmed   →  confirmed
+Production run scheduled and completed  →  in_production  →  ready_to_ship
+Shipment invoice created  →  shipped
 ```
 
 ---
 
 ## Development Tips
 
-**Hot reload** — `run.py` uses `reload=True` so the server restarts on every file save.
-
-**Add a new admin user** — Update `ADMIN_USERNAME` / `ADMIN_PASSWORD` in `.env` and delete the existing admin row in the `users` table, then restart.
+**Hot reload** — `run.py` uses `reload=True` so the server restarts automatically on every file save.
 
 **Change port** — Edit `run.py`:
 ```python
-uvicorn.run("app.main:app", host="127.0.0.1", port=8080, reload=True)
+uvicorn.run("app.main:app", host="127.0.0.1", port=8083, reload=True)
+```
+
+**Reset admin password** — Update `ADMIN_PASSWORD` in `.env`, delete the admin row from the `users` table, then restart. The admin will be re-seeded on startup.
+
+**Generate a secure SECRET_KEY:**
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
 **Production checklist:**
 - Set `DEBUG=False` in `.env`
-- Use a long random `SECRET_KEY` (e.g. `openssl rand -hex 32`)
-- Run behind nginx / gunicorn
-- Enable HTTPS
+- Use a long random `SECRET_KEY`
+- Set `APP_ENV=production`
+- Run behind a reverse proxy (nginx)
+- Enable HTTPS / TLS
+- Use a managed PostgreSQL instance
 
 ---
 
-## Beginner Notes
+## Beginner Reference
 
-| Concept | Where to look |
+| Topic | Where to look |
 |---|---|
-| How routes work | `app/routers/*.py` |
-| How database models work | `app/models/*.py` |
-| How forms are processed | `Form(...)` params in routers |
-| How authentication works | `app/services/auth_service.py` |
-| How pages are rendered | `app/templates/` |
-| How the design is built | `app/static/css/main.css` |
-| App startup / table creation | `app/main.py` → `lifespan()` |
+| App startup & table creation | `app/main.py` → `lifespan()` |
+| Access control middleware | `app/main.py` → `AccessControlMiddleware` |
+| Route definitions | `app/routers/*.py` |
+| Database models & relationships | `app/models/*.py` |
+| Auth — JWT & bcrypt | `app/services/auth_service.py` |
+| Auth guards (dependencies) | `app/dependencies.py` |
+| Shared Jinja2 templates instance | `app/templates_config.py` |
+| Page templates | `app/templates/` |
+| CSS design system | `app/static/css/main.css` |
+| App configuration | `app/config.py` + `.env` |
 
 ---
 
 ## License
 
-MIT — free to use, modify, and distribute.
+Proprietary — developed for internal use by Croydon Kowloon Designs Ltd. (CKDL).  
+All rights reserved.
