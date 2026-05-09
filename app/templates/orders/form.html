@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% set is_edit = order is not none %}
+{% block title %}{{ 'Edit Order' if is_edit else 'New Order' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Order' if is_edit else 'New Order Receipt' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/orders" class="btn btn-secondary btn-sm">&#8592; Back to Orders</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit Order' if is_edit else 'New Order Receipt' }}</div>
+    <div class="page-subtitle">{{ 'Update order details' if is_edit else 'Place a new customer order against a garment style' }}</div>
+  </div>
+</div>
+<form method="POST" action="{{ '/orders/' + order.id|string + '/edit' if is_edit else '/orders/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;">
+
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <!-- Order Info -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Order Information</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Customer <span style="color:var(--apple-red)">*</span></label>
+              <select class="form-control" name="customer_id" required>
+                <option value="">Select customer...</option>
+                {% for c in customers %}
+                <option value="{{ c.id }}"
+                  {% if is_edit and order.customer_id == c.id %}selected
+                  {% elif not is_edit and request.query_params.get('customer_id')|int == c.id %}selected
+                  {% endif %}>{{ c.company_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Garment Style <span style="color:var(--apple-red)">*</span></label>
+              <select class="form-control" name="style_id" required>
+                <option value="">Select style...</option>
+                {% for s in styles %}
+                <option value="{{ s.id }}" {% if is_edit and order.style_id == s.id %}selected{% endif %}>
+                  {{ s.style_no }} &#8212; {{ s.style_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Buyer PO Number</label>
+              <input class="form-control" type="text" name="po_number"
+                value="{{ order.po_number or '' if is_edit else '' }}" placeholder="e.g. PO-2025-00123">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Order Date</label>
+              <input class="form-control" type="date" name="order_date"
+                value="{{ order.order_date.isoformat() if is_edit and order.order_date else '' }}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Required Delivery Date</label>
+            <input class="form-control" type="date" name="delivery_date"
+              value="{{ order.delivery_date.isoformat() if is_edit and order.delivery_date else '' }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Quantity & Pricing -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Quantity &amp; Pricing</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Order Quantity <span style="color:var(--apple-red)">*</span></label>
+              <input class="form-control" type="number" name="order_qty" required min="1"
+                value="{{ order.order_qty if is_edit else '' }}" placeholder="e.g. 5000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit Price <span style="color:var(--apple-red)">*</span></label>
+              <input class="form-control" type="number" name="unit_price" required min="0" step="0.0001"
+                value="{{ order.unit_price if is_edit else '' }}" placeholder="e.g. 8.5000">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Currency</label>
+              <select class="form-control" name="currency">
+                {% for cur in ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'BDT'] %}
+                <option value="{{ cur }}" {% if is_edit and order.currency == cur %}selected{% elif not is_edit and cur == 'USD' %}selected{% endif %}>{{ cur }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-end;">
+              <div style="background:var(--apple-light-gray);border-radius:var(--radius-md);padding:12px 16px;width:100%;">
+                <div style="font-size:11px;color:var(--apple-mid);margin-bottom:4px;">Total Order Value</div>
+                <div id="total-value" style="font-size:18px;font-weight:700;color:var(--apple-blue);">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Remarks</span></div>
+        <div class="card-body">
+          <textarea class="form-control" name="remarks" rows="3"
+            placeholder="Any special instructions or notes...">{{ order.remarks or '' if is_edit else '' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Order Details</span></div>
+        <div class="card-body">
+          {% if not is_edit %}
+          <div class="form-group">
+            <label class="form-label">Order No</label>
+            <input class="form-control" type="text" value="{{ next_order_no }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+            <div class="form-hint">Auto-generated on save</div>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label class="form-label">Order No</label>
+            <input class="form-control" type="text" value="{{ order.order_no }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status">
+              {% for st in ['pending','confirmed','in_production','ready_to_ship','shipped','cancelled'] %}
+              <option value="{{ st }}" {% if order.status == st %}selected{% endif %}>{{ st | replace('_',' ') | title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          {{ 'Save Changes' if is_edit else '&#10003; Place Order' }}
+        </button>
+        <a href="/orders{% if is_edit %}/{{ order.id }}{% endif %}" class="btn btn-secondary btn-lg"
+          style="width:100%;justify-content:center;">Cancel</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  const qtyInput   = document.querySelector('[name="order_qty"]');
+  const priceInput = document.querySelector('[name="unit_price"]');
+  const curSel     = document.querySelector('[name="currency"]');
+  const display    = document.getElementById('total-value');
+  function updateTotal() {
+    const qty   = parseFloat(qtyInput.value)   || 0;
+    const price = parseFloat(priceInput.value) || 0;
+    const cur   = curSel.value;
+    const total = qty * price;
+    display.textContent = total > 0 ? cur + ' ' + total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) : '&#8212;';
+  }
+  [qtyInput, priceInput, curSel].forEach(el => el && el.addEventListener('input', updateTotal));
+  updateTotal();
+</script>
+{% endblock %}

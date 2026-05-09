@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+{% block title %}Users{% endblock %}
+{% block topbar_title %}Users{% endblock %}
+{% block topbar_actions %}
+  <a href="/admin/users/new" class="btn btn-primary btn-sm">&#43; New User</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">User Management</div>
+    <div class="page-subtitle">{{ users | length }} user(s) registered</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body" style="padding:0;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Type</th>
+          <th>Groups</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.username }}</strong></td>
+          <td>{{ u.full_name or '—' }}</td>
+          <td style="color:#6b8aab;">{{ u.email }}</td>
+          <td>
+            {% if u.is_admin %}
+              <span class="badge" style="background:rgba(192,57,43,.1);color:#c0392b;border:1px solid rgba(192,57,43,.2);">Admin</span>
+            {% else %}
+              <span class="badge badge-active">General</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.is_admin %}
+              <span style="color:#8aabca;font-size:12px;">— admin access —</span>
+            {% elif u.user_groups %}
+              {% for ug in u.user_groups %}
+                <span class="badge badge-active" style="margin-right:4px;">{{ ug.group.group_name }}</span>
+              {% endfor %}
+            {% else %}
+              <span style="color:#c0c8d0;font-size:12px;">No group</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge badge-{{ 'active' if u.is_active else 'inactive' }}">
+              {{ 'Active' if u.is_active else 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div style="display:flex;gap:8px;">
+              <a href="/admin/users/{{ u.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+              {% if u.id != current_user.id %}
+              <form method="POST" action="/admin/users/{{ u.id }}/delete"
+                    onsubmit="return confirm('Delete user {{ u.username }}?')">
+                <button type="submit" class="btn btn-sm"
+                        style="background:rgba(192,57,43,.1);color:#c0392b;border:1px solid rgba(192,57,43,.2);">
+                  Delete
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" style="text-align:center;color:#8aabca;padding:40px;">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

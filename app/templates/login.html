@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — GarmentFlow</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body style="overflow:hidden;margin:0;">
+<div class="login-split">
+
+  <!-- ══ LEFT: dark factory illustration panel ══ -->
+  <div class="login-panel-left">
+
+    <!-- Factory floor SVG — screen blend makes CKDL-blue lines glow on dark navy -->
+    <div class="login-factory-bg">
+      <svg viewBox="0 0 1400 680" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- CEILING BEAMS -->
+        <rect x="0" y="0" width="1400" height="10" fill="rgba(25,107,171,.4)"/>
+        <rect x="0" y="32" width="1400" height="4"  fill="rgba(25,107,171,.2)"/>
+        <rect x="0" y="56" width="1400" height="3"  fill="rgba(25,107,171,.12)"/>
+        <!-- Structural columns -->
+        <rect x="0"    y="0" width="8" height="680" fill="rgba(25,107,171,.28)"/>
+        <rect x="218"  y="0" width="5" height="680" fill="rgba(25,107,171,.15)"/>
+        <rect x="458"  y="0" width="5" height="680" fill="rgba(25,107,171,.15)"/>
+        <rect x="698"  y="0" width="6" height="680" fill="rgba(25,107,171,.18)"/>
+        <rect x="938"  y="0" width="5" height="680" fill="rgba(25,107,171,.15)"/>
+        <rect x="1042" y="0" width="5" height="680" fill="rgba(25,107,171,.15)"/>
+        <rect x="1392" y="0" width="8" height="680" fill="rgba(25,107,171,.28)"/>
+
+        <!-- INDUSTRIAL LIGHTS — bright glowing fixtures -->
+        <rect x="236" y="0" width="68" height="6" fill="rgba(25,107,171,.6)"/>
+        <rect x="265" y="6" width="10" height="30" fill="rgba(25,107,171,.4)"/>
+        <rect x="234" y="36" width="72" height="18" rx="4" fill="rgba(220,240,255,.98)"/>
+        <ellipse cx="270" cy="36" rx="260" ry="110" fill="rgba(25,107,171,.12)"/>
+
+        <rect x="536" y="0" width="68" height="6" fill="rgba(25,107,171,.6)"/>
+        <rect x="565" y="6" width="10" height="30" fill="rgba(25,107,171,.4)"/>
+        <rect x="534" y="36" width="72" height="18" rx="4" fill="rgba(220,240,255,.98)"/>
+        <ellipse cx="570" cy="36" rx="260" ry="110" fill="rgba(25,107,171,.12)"/>
+
+        <rect x="836" y="0" width="68" height="6" fill="rgba(25,107,171,.6)"/>
+        <rect x="865" y="6" width="10" height="30" fill="rgba(25,107,171,.4)"/>
+        <rect x="834" y="36" width="72" height="18" rx="4" fill="rgba(220,240,255,.98)"/>
+        <ellipse cx="870" cy="36" rx="260" ry="110" fill="rgba(25,107,171,.12)"/>
+
+        <!-- BACK WALL LINE -->
+        <rect x="0" y="228" width="1400" height="2" fill="rgba(25,107,171,.14)"/>
+
+        <!-- WINDOWS with light glow -->
+        <rect x="282" y="78" width="92" height="112" rx="4" fill="rgba(180,220,255,.06)" stroke="rgba(25,107,171,.3)" stroke-width="1.5"/>
+        <line x1="328" y1="78"  x2="328" y2="190" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+        <line x1="282" y1="134" x2="374" y2="134" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+        <ellipse cx="328" cy="134" rx="55" ry="55" fill="rgba(180,220,255,.04)"/>
+
+        <rect x="482" y="78" width="92" height="112" rx="4" fill="rgba(180,220,255,.06)" stroke="rgba(25,107,171,.3)" stroke-width="1.5"/>
+        <line x1="528" y1="78"  x2="528" y2="190" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+        <line x1="482" y1="134" x2="574" y2="134" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+        <ellipse cx="528" cy="134" rx="55" ry="55" fill="rgba(180,220,255,.04)"/>
+
+        <rect x="682" y="78" width="92" height="112" rx="4" fill="rgba(180,220,255,.06)" stroke="rgba(25,107,171,.3)" stroke-width="1.5"/>
+        <line x1="728" y1="78"  x2="728" y2="190" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+        <line x1="682" y1="134" x2="774" y2="134" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+
+        <rect x="882" y="78" width="92" height="112" rx="4" fill="rgba(180,220,255,.06)" stroke="rgba(25,107,171,.3)" stroke-width="1.5"/>
+        <line x1="928" y1="78"  x2="928" y2="190" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+        <line x1="882" y1="134" x2="974" y2="134" stroke="rgba(25,107,171,.2)" stroke-width="1"/>
+
+        <!-- FLOOR PERSPECTIVE GRID -->
+        <line x1="0"    y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.1)"  stroke-width="1"/>
+        <line x1="175"  y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <line x1="350"  y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <line x1="525"  y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <line x1="700"  y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.1)"  stroke-width="1"/>
+        <line x1="875"  y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <line x1="1050" y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <line x1="1225" y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <line x1="1400" y1="680" x2="700" y2="228" stroke="rgba(25,107,171,.1)"  stroke-width="1"/>
+        <!-- Horizontal floor lines -->
+        <line x1="0" y1="680" x2="1400" y2="680" stroke="rgba(25,107,171,.22)"  stroke-width="2"/>
+        <line x1="0" y1="570" x2="1400" y2="570" stroke="rgba(25,107,171,.12)"  stroke-width="1"/>
+        <line x1="0" y1="470" x2="1400" y2="470" stroke="rgba(25,107,171,.09)"  stroke-width="1"/>
+        <line x1="0" y1="375" x2="1400" y2="375" stroke="rgba(25,107,171,.07)"  stroke-width="1"/>
+        <line x1="0" y1="305" x2="1400" y2="305" stroke="rgba(25,107,171,.05)"  stroke-width="1"/>
+
+        <!-- FABRIC BOLT ROLLS (LEFT) -->
+        <rect x="14" y="198" width="196" height="14" rx="5" fill="rgba(25,107,171,.3)" stroke="rgba(25,107,171,.5)" stroke-width="1.5"/>
+        <ellipse cx="48"  cy="195" rx="22" ry="10" fill="rgba(200,120,40,.4)"   stroke="rgba(220,160,60,.6)"  stroke-width="1.2"/>
+        <ellipse cx="92"  cy="195" rx="22" ry="10" fill="rgba(60,120,220,.35)"  stroke="rgba(100,160,255,.5)" stroke-width="1.2"/>
+        <ellipse cx="136" cy="195" rx="22" ry="10" fill="rgba(140,70,30,.35)"   stroke="rgba(200,140,60,.5)"  stroke-width="1.2"/>
+        <ellipse cx="180" cy="195" rx="22" ry="10" fill="rgba(80,160,60,.3)"    stroke="rgba(120,200,80,.45)" stroke-width="1.2"/>
+        <!-- Roll A -->
+        <rect x="20" y="264" width="58" height="324" rx="5" fill="rgba(200,120,40,.3)" stroke="rgba(25,107,171,.45)" stroke-width="1.5"/>
+        <ellipse cx="49" cy="264" rx="29" ry="13" fill="rgba(220,140,50,.4)" stroke="rgba(25,107,171,.6)"  stroke-width="1.5"/>
+        <ellipse cx="49" cy="588" rx="29" ry="13" fill="rgba(200,120,40,.3)" stroke="rgba(25,107,171,.4)"  stroke-width="1.5"/>
+        <ellipse cx="49" cy="264" rx="20" ry="9"  fill="rgba(25,107,171,.35)"/>
+        <ellipse cx="49" cy="264" rx="11" ry="5"  fill="rgba(25,107,171,.28)"/>
+        <ellipse cx="49" cy="264" rx="5"  ry="2"  fill="rgba(25,107,171,.7)"/>
+        <line x1="34" y1="266" x2="34" y2="587" stroke="rgba(25,107,171,.15)" stroke-width="1"/>
+        <line x1="49" y1="264" x2="49" y2="588" stroke="rgba(25,107,171,.15)" stroke-width="1"/>
+        <line x1="64" y1="266" x2="64" y2="587" stroke="rgba(25,107,171,.15)" stroke-width="1"/>
+        <!-- Roll B -->
+        <rect x="90" y="294" width="54" height="294" rx="5" fill="rgba(60,120,220,.28)" stroke="rgba(100,160,255,.4)"  stroke-width="1.5"/>
+        <ellipse cx="117" cy="294" rx="27" ry="12" fill="rgba(80,140,240,.36)" stroke="rgba(100,160,255,.52)" stroke-width="1.5"/>
+        <ellipse cx="117" cy="588" rx="27" ry="12" fill="rgba(60,120,220,.28)" stroke="rgba(100,160,255,.36)" stroke-width="1.5"/>
+        <ellipse cx="117" cy="294" rx="18" ry="8"  fill="rgba(100,160,255,.22)"/>
+        <ellipse cx="117" cy="294" rx="9"  ry="4"  fill="rgba(100,160,255,.18)"/>
+        <ellipse cx="117" cy="294" rx="4"  ry="2"  fill="rgba(100,160,255,.5)"/>
+        <!-- Roll C -->
+        <rect x="154" y="274" width="56" height="314" rx="5" fill="rgba(140,80,30,.3)" stroke="rgba(200,140,60,.45)" stroke-width="1.5"/>
+        <ellipse cx="182" cy="274" rx="28" ry="12" fill="rgba(170,100,40,.38)" stroke="rgba(200,140,60,.55)" stroke-width="1.5"/>
+        <ellipse cx="182" cy="588" rx="28" ry="12" fill="rgba(140,80,30,.3)"   stroke="rgba(200,140,60,.4)"  stroke-width="1.5"/>
+        <ellipse cx="182" cy="274" rx="19" ry="8"  fill="rgba(200,140,60,.28)"/>
+        <ellipse cx="182" cy="274" rx="10" ry="4"  fill="rgba(200,140,60,.22)"/>
+        <ellipse cx="182" cy="274" rx="4"  ry="2"  fill="rgba(200,140,60,.6)"/>
+
+        <!-- PRODUCTION TABLE -->
+        <rect x="216" y="433" width="808" height="24" rx="4" fill="rgba(25,107,171,.28)" stroke="rgba(25,107,171,.5)" stroke-width="2"/>
+        <rect x="216" y="433" width="808" height="4"  rx="2" fill="rgba(25,107,171,.5)"/>
+        <rect x="234" y="457" width="10" height="223" fill="rgba(25,107,171,.22)"/>
+        <rect x="454" y="457" width="10" height="223" fill="rgba(25,107,171,.22)"/>
+        <rect x="694" y="457" width="10" height="223" fill="rgba(25,107,171,.22)"/>
+        <rect x="994" y="457" width="10" height="223" fill="rgba(25,107,171,.22)"/>
+        <line x1="234" y1="578" x2="1004" y2="578" stroke="rgba(25,107,171,.18)" stroke-width="5"/>
+        <!-- Fabric on table -->
+        <path d="M228 433 Q310 418 392 429 Q322 432 228 433Z" fill="rgba(60,120,220,.28)"/>
+        <path d="M438 433 Q522 416 598 427 Q548 431 438 433Z" fill="rgba(200,140,60,.22)"/>
+        <path d="M686 433 Q762 415 842 426 Q792 431 686 433Z" fill="rgba(200,120,40,.22)"/>
+        <path d="M896 433 Q962 417 1012 425 Q978 430 896 433Z" fill="rgba(100,160,255,.18)"/>
+
+        <!-- SEWING MACHINES (4×) -->
+        <g transform="translate(246,333)">
+          <rect x="0"  y="93" width="102" height="13" rx="4" fill="rgba(25,107,171,.42)"  stroke="rgba(25,107,171,.6)"  stroke-width="1"/>
+          <rect x="8"  y="37" width="88"  height="58" rx="9" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.48)" stroke-width="1.5"/>
+          <path d="M8 51 Q10 11 41 9 L96 9 L96 51" fill="rgba(25,107,171,.15)" stroke="rgba(25,107,171,.38)" stroke-width="1.5"/>
+          <rect x="32" y="9"  width="6"   height="84" rx="3" fill="rgba(25,107,171,.5)" stroke="rgba(25,107,171,.7)" stroke-width="1"/>
+          <path d="M31 93 L35 102 L39 93Z" fill="rgba(200,235,255,.95)"/>
+          <ellipse cx="78" cy="7" rx="14" ry="7" fill="rgba(80,160,230,.65)" stroke="rgba(80,160,230,.85)" stroke-width="1.2"/>
+          <path d="M78 2 Q57 -9 44 9 Q36 26 35 84" fill="none" stroke="rgba(80,160,230,.7)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="72" cy="65" r="12" fill="rgba(0,0,0,.4)" stroke="rgba(25,107,171,.5)" stroke-width="1.5"/>
+          <line x1="72" y1="56" x2="72" y2="63" stroke="rgba(25,107,171,.9)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(456,333)">
+          <rect x="0"  y="93" width="102" height="13" rx="4" fill="rgba(25,107,171,.42)"  stroke="rgba(25,107,171,.6)"  stroke-width="1"/>
+          <rect x="8"  y="37" width="88"  height="58" rx="9" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.48)" stroke-width="1.5"/>
+          <path d="M8 51 Q10 11 41 9 L96 9 L96 51" fill="rgba(25,107,171,.15)" stroke="rgba(25,107,171,.38)" stroke-width="1.5"/>
+          <rect x="32" y="9"  width="6"   height="84" rx="3" fill="rgba(25,107,171,.5)" stroke="rgba(25,107,171,.7)" stroke-width="1"/>
+          <path d="M31 93 L35 102 L39 93Z" fill="rgba(200,235,255,.95)"/>
+          <ellipse cx="78" cy="7" rx="14" ry="7" fill="rgba(80,160,230,.65)" stroke="rgba(80,160,230,.85)" stroke-width="1.2"/>
+          <path d="M78 2 Q57 -9 44 9 Q36 26 35 84" fill="none" stroke="rgba(80,160,230,.7)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="72" cy="65" r="12" fill="rgba(0,0,0,.4)" stroke="rgba(25,107,171,.5)" stroke-width="1.5"/>
+          <line x1="72" y1="56" x2="72" y2="63" stroke="rgba(25,107,171,.9)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(666,333)">
+          <rect x="0"  y="93" width="102" height="13" rx="4" fill="rgba(25,107,171,.42)"  stroke="rgba(25,107,171,.6)"  stroke-width="1"/>
+          <rect x="8"  y="37" width="88"  height="58" rx="9" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.48)" stroke-width="1.5"/>
+          <path d="M8 51 Q10 11 41 9 L96 9 L96 51" fill="rgba(25,107,171,.15)" stroke="rgba(25,107,171,.38)" stroke-width="1.5"/>
+          <rect x="32" y="9"  width="6"   height="84" rx="3" fill="rgba(25,107,171,.5)" stroke="rgba(25,107,171,.7)" stroke-width="1"/>
+          <path d="M31 93 L35 102 L39 93Z" fill="rgba(200,235,255,.95)"/>
+          <ellipse cx="78" cy="7" rx="14" ry="7" fill="rgba(80,160,230,.65)" stroke="rgba(80,160,230,.85)" stroke-width="1.2"/>
+          <path d="M78 2 Q57 -9 44 9 Q36 26 35 84" fill="none" stroke="rgba(80,160,230,.7)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="72" cy="65" r="12" fill="rgba(0,0,0,.4)" stroke="rgba(25,107,171,.5)" stroke-width="1.5"/>
+          <line x1="72" y1="56" x2="72" y2="63" stroke="rgba(25,107,171,.9)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(876,333)">
+          <rect x="0"  y="93" width="102" height="13" rx="4" fill="rgba(25,107,171,.42)"  stroke="rgba(25,107,171,.6)"  stroke-width="1"/>
+          <rect x="8"  y="37" width="88"  height="58" rx="9" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.48)" stroke-width="1.5"/>
+          <path d="M8 51 Q10 11 41 9 L96 9 L96 51" fill="rgba(25,107,171,.15)" stroke="rgba(25,107,171,.38)" stroke-width="1.5"/>
+          <rect x="32" y="9"  width="6"   height="84" rx="3" fill="rgba(25,107,171,.5)" stroke="rgba(25,107,171,.7)" stroke-width="1"/>
+          <path d="M31 93 L35 102 L39 93Z" fill="rgba(200,235,255,.95)"/>
+          <ellipse cx="78" cy="7" rx="14" ry="7" fill="rgba(80,160,230,.65)" stroke="rgba(80,160,230,.85)" stroke-width="1.2"/>
+          <path d="M78 2 Q57 -9 44 9 Q36 26 35 84" fill="none" stroke="rgba(80,160,230,.7)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="72" cy="65" r="12" fill="rgba(0,0,0,.4)" stroke="rgba(25,107,171,.5)" stroke-width="1.5"/>
+          <line x1="72" y1="56" x2="72" y2="63" stroke="rgba(25,107,171,.9)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+
+        <!-- WORKER SILHOUETTES -->
+        <g transform="translate(274,253)"><circle cx="23" cy="0" r="19" fill="rgba(25,107,171,.3)"/><rect x="5" y="21" width="36" height="62" rx="13" fill="rgba(25,107,171,.22)"/><line x1="5"  y1="36" x2="-16" y2="72" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/><line x1="41" y1="36" x2="58"  y2="68" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/></g>
+        <g transform="translate(484,253)"><circle cx="23" cy="0" r="19" fill="rgba(25,107,171,.3)"/><rect x="5" y="21" width="36" height="62" rx="13" fill="rgba(25,107,171,.22)"/><line x1="5"  y1="36" x2="-16" y2="72" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/><line x1="41" y1="36" x2="58"  y2="68" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/></g>
+        <g transform="translate(694,253)"><circle cx="23" cy="0" r="19" fill="rgba(25,107,171,.3)"/><rect x="5" y="21" width="36" height="62" rx="13" fill="rgba(25,107,171,.22)"/><line x1="5"  y1="36" x2="-16" y2="72" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/><line x1="41" y1="36" x2="58"  y2="68" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/></g>
+        <g transform="translate(904,253)"><circle cx="23" cy="0" r="19" fill="rgba(25,107,171,.3)"/><rect x="5" y="21" width="36" height="62" rx="13" fill="rgba(25,107,171,.22)"/><line x1="5"  y1="36" x2="-16" y2="72" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/><line x1="41" y1="36" x2="58"  y2="68" stroke="rgba(25,107,171,.22)" stroke-width="11" stroke-linecap="round"/></g>
+
+        <!-- GARMENT RACK (RIGHT) -->
+        <rect x="1048" y="146" width="316" height="11" rx="5" fill="rgba(25,107,171,.65)" stroke="rgba(25,107,171,.85)" stroke-width="1.5"/>
+        <rect x="1056" y="157" width="9"   height="435" rx="4" fill="rgba(25,107,171,.4)"/>
+        <rect x="1348" y="157" width="9"   height="435" rx="4" fill="rgba(25,107,171,.4)"/>
+        <rect x="1033" y="586" width="62" height="9" rx="4" fill="rgba(25,107,171,.45)"/>
+        <rect x="1316" y="586" width="62" height="9" rx="4" fill="rgba(25,107,171,.45)"/>
+        <!-- Hanging shirts -->
+        <g transform="translate(1066,157)"><line x1="21" y1="0" x2="21" y2="15" stroke="rgba(25,107,171,.9)" stroke-width="2.5"/><path d="M9 15 L2 37 L-2 34 L-11 21 L-16 24 L-6 42 L-6 114 L48 114 L48 42 L58 24 L53 21 L44 34 L40 37 L33 15 L26 23 L21 17 L16 23 Z" fill="rgba(60,120,220,.32)" stroke="rgba(100,160,255,.48)" stroke-width="1.5"/><path d="M9 15 L17 26 L21 19 L25 26 L33 15" fill="none" stroke="rgba(100,160,255,.55)" stroke-width="1.5"/></g>
+        <g transform="translate(1116,157)"><line x1="21" y1="0" x2="21" y2="15" stroke="rgba(25,107,171,.9)" stroke-width="2.5"/><path d="M9 15 L2 37 L-2 34 L-11 21 L-16 24 L-6 42 L-6 114 L48 114 L48 42 L58 24 L53 21 L44 34 L40 37 L33 15 L26 23 L21 17 L16 23 Z" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.5)" stroke-width="1.5"/><path d="M9 15 L17 26 L21 19 L25 26 L33 15" fill="none" stroke="rgba(25,107,171,.6)" stroke-width="1.5"/></g>
+        <g transform="translate(1166,157)"><line x1="21" y1="0" x2="21" y2="15" stroke="rgba(25,107,171,.9)" stroke-width="2.5"/><path d="M9 15 L2 37 L-2 34 L-11 21 L-16 24 L-6 42 L-6 114 L48 114 L48 42 L58 24 L53 21 L44 34 L40 37 L33 15 L26 23 L21 17 L16 23 Z" fill="rgba(80,160,60,.28)" stroke="rgba(120,210,80,.45)" stroke-width="1.5"/><path d="M9 15 L17 26 L21 19 L25 26 L33 15" fill="none" stroke="rgba(120,210,80,.5)" stroke-width="1.5"/></g>
+        <g transform="translate(1216,157)"><line x1="21" y1="0" x2="21" y2="15" stroke="rgba(25,107,171,.9)" stroke-width="2.5"/><path d="M9 15 L2 37 L-2 34 L-11 21 L-16 24 L-6 42 L-6 114 L48 114 L48 42 L58 24 L53 21 L44 34 L40 37 L33 15 L26 23 L21 17 L16 23 Z" fill="rgba(180,60,60,.28)" stroke="rgba(230,100,100,.42)" stroke-width="1.5"/><path d="M9 15 L17 26 L21 19 L25 26 L33 15" fill="none" stroke="rgba(230,100,100,.48)" stroke-width="1.5"/></g>
+        <g transform="translate(1266,157)"><line x1="21" y1="0" x2="21" y2="15" stroke="rgba(25,107,171,.9)" stroke-width="2.5"/><path d="M9 15 L2 37 L-2 34 L-11 21 L-16 24 L-6 42 L-6 114 L48 114 L48 42 L58 24 L53 21 L44 34 L40 37 L33 15 L26 23 L21 17 L16 23 Z" fill="rgba(60,160,140,.25)" stroke="rgba(80,210,190,.4)" stroke-width="1.5"/><path d="M9 15 L17 26 L21 19 L25 26 L33 15" fill="none" stroke="rgba(80,210,190,.45)" stroke-width="1.5"/></g>
+        <g transform="translate(1316,157)"><line x1="21" y1="0" x2="21" y2="15" stroke="rgba(25,107,171,.9)" stroke-width="2.5"/><path d="M9 15 L2 37 L-2 34 L-11 21 L-16 24 L-6 42 L-6 114 L48 114 L48 42 L58 24 L53 21 L44 34 L40 37 L33 15 L26 23 L21 17 L16 23 Z" fill="rgba(150,80,200,.22)" stroke="rgba(190,130,240,.38)" stroke-width="1.5"/><path d="M9 15 L17 26 L21 19 L25 26 L33 15" fill="none" stroke="rgba(190,130,240,.44)" stroke-width="1.5"/></g>
+
+        <!-- THREAD SPOOLS -->
+        <ellipse cx="222" cy="430" rx="17" ry="8" fill="rgba(80,160,230,.5)" stroke="rgba(80,160,230,.75)" stroke-width="1.2"/>
+        <rect    x="205" y="414"  width="34" height="16" rx="2" fill="rgba(80,160,230,.3)" stroke="rgba(80,160,230,.55)" stroke-width="1.2"/>
+        <ellipse cx="222" cy="414" rx="17" ry="8" fill="rgba(80,160,230,.55)" stroke="rgba(80,160,230,.8)" stroke-width="1.2"/>
+        <ellipse cx="1020" cy="430" rx="15" ry="7" fill="rgba(100,160,255,.45)" stroke="rgba(100,160,255,.68)" stroke-width="1.2"/>
+        <rect    x="1005" y="415" width="30" height="15" rx="2" fill="rgba(100,160,255,.28)" stroke="rgba(100,160,255,.52)" stroke-width="1.2"/>
+        <ellipse cx="1020" cy="415" rx="15" ry="7" fill="rgba(100,160,255,.5)" stroke="rgba(100,160,255,.72)" stroke-width="1.2"/>
+
+        <!-- MEASURING TAPE -->
+        <rect x="224" y="404" width="228" height="14" rx="4" fill="rgba(80,160,230,.25)" stroke="rgba(80,160,230,.45)" stroke-width="1"/>
+        <text x="240" y="414" fill="rgba(80,160,230,.7)" font-size="8" font-family="monospace">5   10   15   20   25   30   35</text>
+        <ellipse cx="224" cy="411" rx="9" ry="9" fill="rgba(80,160,230,.35)" stroke="rgba(80,160,230,.55)" stroke-width="1"/>
+
+        <!-- SCISSORS -->
+        <g transform="translate(468,404)">
+          <circle cx="0" cy="0"  r="8" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.6)" stroke-width="1.5"/>
+          <circle cx="0" cy="14" r="8" fill="rgba(25,107,171,.22)" stroke="rgba(25,107,171,.6)" stroke-width="1.5"/>
+          <path d="M6 3  L50 32" stroke="rgba(25,107,171,.75)" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M6 10 L50 39" stroke="rgba(25,107,171,.75)" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- WALL SIGN -->
+        <rect x="1060" y="66" width="288" height="66" rx="6" fill="rgba(25,107,171,.14)" stroke="rgba(25,107,171,.35)" stroke-width="1.5"/>
+        <text x="1204" y="94"  text-anchor="middle" fill="rgba(25,107,171,.7)"  font-size="14" font-weight="700" font-family="system-ui" letter-spacing="2">PRODUCTION FLOOR</text>
+        <text x="1204" y="116" text-anchor="middle" fill="rgba(25,107,171,.45)" font-size="10" font-family="system-ui" letter-spacing="1.5">AUTHORIZED PERSONNEL ONLY</text>
+        <rect x="1060" y="132" width="288" height="7" rx="3" fill="rgba(25,107,171,.22)"/>
+
+      </svg>
+    </div>
+
+    <!-- Bottom gradient fade for text readability -->
+    <div class="login-panel-gradient"></div>
+
+    <!-- Branding text pinned to bottom -->
+    <div class="login-panel-brand">
+      <div class="login-panel-badge">Garment Manufacturing ERP</div>
+      <div class="login-panel-title">GarmentFlow</div>
+      <div class="login-panel-sub">End-to-end production management — orders, lines, shipments</div>
+      <div class="login-panel-stats">
+        <div class="login-stat">
+          <div class="login-stat-num">Orders</div>
+          <div class="login-stat-label">Full Lifecycle Tracking</div>
+        </div>
+        <div class="login-stat">
+          <div class="login-stat-num">Production</div>
+          <div class="login-stat-label">Real-time Line Output</div>
+        </div>
+        <div class="login-stat">
+          <div class="login-stat-num">Shipments</div>
+          <div class="login-stat-label">Delivery & BL Management</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /login-panel-left -->
+
+  <!-- ══ RIGHT: clean login form panel ══ -->
+  <div class="login-panel-right">
+    <div class="login-form-inner fade-in-up">
+
+      <!-- Admin Panel button -->
+      <div style="text-align:right;margin-bottom:28px;">
+        <a href="/admin/login"
+           style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;
+                  color:#c0392b;text-decoration:none;border:1.5px solid rgba(192,57,43,.25);
+                  border-radius:8px;padding:6px 14px;background:rgba(192,57,43,.05);
+                  letter-spacing:.3px;transition:all .15s;"
+           onmouseover="this.style.background='rgba(192,57,43,.1)';this.style.borderColor='rgba(192,57,43,.5)'"
+           onmouseout="this.style.background='rgba(192,57,43,.05)';this.style.borderColor='rgba(192,57,43,.25)'">
+          <span style="font-size:14px;">&#128274;</span> Admin Panel
+        </a>
+      </div>
+
+      <img src="/static/img/ckdl-logo.svg" alt="CKDL" class="login-logo">
+
+      <div class="login-heading">Welcome back</div>
+      <div class="login-heading-sub">Sign in to your GarmentFlow account</div>
+
+      {% if error %}
+      <div class="login-error">
+        <span>⚠</span> {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/login">
+        <div class="login-field">
+          <label class="login-label" for="username">Username</label>
+          <input class="login-input" type="text" id="username" name="username"
+            placeholder="Enter your username" autocomplete="username" required autofocus>
+        </div>
+        <div class="login-field">
+          <label class="login-label" for="password">Password</label>
+          <input class="login-input" type="password" id="password" name="password"
+            placeholder="Enter your password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="login-btn">Sign In &nbsp;&#10132;</button>
+      </form>
+
+      <div class="login-divider"></div>
+      <div class="login-footer">
+        &copy; 2025 Croydon Kowloon Designs Ltd.<br>
+        Garment Production Management System
+      </div>
+
+    </div>
+  </div><!-- /login-panel-right -->
+
+</div>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

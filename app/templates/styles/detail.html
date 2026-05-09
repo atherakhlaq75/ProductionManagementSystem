@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ style.style_name }}{% endblock %}
+{% block topbar_title %}Style Detail{% endblock %}
+{% block topbar_actions %}
+  <a href="/styles/{{ style.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+  <a href="/styles" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-purple" style="width:52px;height:52px;font-size:22px;">&#128247;</div>
+      <div>
+        <div class="page-title">{{ style.style_name }}</div>
+        <div class="page-subtitle">{{ style.style_no }} &nbsp;&middot;&nbsp;
+          <span class="badge badge-{{ style.status }}">{{ style.status | title }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Style Details</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Category', style.category),
+          ('Gender', style.gender),
+          ('Season', style.season),
+          ('Buyer Style Ref', style.buyer_style_ref),
+          ('Fabric Type', style.fabric_type),
+          ('Fabric Composition', style.fabric_composition),
+          ('Brand', style.brand.brand_name if style.brand else None),
+          ('Customer / Buyer', style.customer.company_name if style.customer else None),
+          ('Description', style.description)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:42%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Production Info</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Unit of Measure', style.unit_of_measure),
+          ('SAM (Minutes)', style.standard_minutes),
+          ('Standard Cost', ('USD ' ~ style.standard_cost|string) if style.standard_cost else None)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:50%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+<div style="margin-top:20px;">
+  <a href="/orders/new" class="btn btn-primary">&#128203; Create Order for this Style</a>
+</div>
+{% endblock %}

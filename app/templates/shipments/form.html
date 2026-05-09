@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% set is_edit = shipment is not none %}
+{% block title %}{{ 'Edit Shipment' if is_edit else 'Create Shipment' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Shipment Invoice' if is_edit else 'Create Shipment Invoice' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/shipments" class="btn btn-secondary btn-sm">&#8592; Back to Shipments</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit Shipment' if is_edit else 'New Shipment Invoice' }}</div>
+    <div class="page-subtitle">{{ 'Update shipment details' if is_edit else 'Create a shipment invoice against a completed order' }}</div>
+  </div>
+</div>
+<form method="POST" action="{{ '/shipments/' + shipment.id|string + '/edit' if is_edit else '/shipments/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;">
+    <div style="display:flex;flex-direction:column;gap:24px;">
+
+      <!-- Order & Qty -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Order &amp; Shipment Quantity</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Order <span style="color:var(--apple-red)">*</span></label>
+              <select class="form-control" name="order_id" required>
+                <option value="">Select order...</option>
+                {% for o in orders %}
+                <option value="{{ o.id }}"
+                  {% if is_edit and shipment.order_id == o.id %}selected
+                  {% elif preselected_order and not is_edit and preselected_order.id == o.id %}selected
+                  {% endif %}>
+                  {{ o.order_no }} &#8212; {{ o.customer.company_name if o.customer else '' }} / {{ o.style.style_name if o.style else '' }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Shipment Date</label>
+              <input class="form-control" type="date" name="shipment_date"
+                value="{{ shipment.shipment_date.isoformat() if is_edit and shipment.shipment_date else '' }}">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Shipped Quantity <span style="color:var(--apple-red)">*</span></label>
+              <input class="form-control" type="number" name="shipped_qty" required min="1"
+                value="{{ shipment.shipped_qty if is_edit else '' }}" placeholder="e.g. 5000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Carton Count</label>
+              <input class="form-control" type="number" name="carton_count" min="0"
+                value="{{ shipment.carton_count or '' if is_edit else '' }}" placeholder="e.g. 250">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Net Weight (KG)</label>
+              <input class="form-control" type="number" step="0.01" name="net_weight_kg"
+                value="{{ shipment.net_weight_kg or '' if is_edit else '' }}" placeholder="e.g. 1250.00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gross Weight (KG)</label>
+              <input class="form-control" type="number" step="0.01" name="gross_weight_kg"
+                value="{{ shipment.gross_weight_kg or '' if is_edit else '' }}" placeholder="e.g. 1380.00">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invoice -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Invoice Value</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Unit Price</label>
+              <input class="form-control" type="number" step="0.0001" name="unit_price"
+                value="{{ shipment.unit_price or '' if is_edit else '' }}" placeholder="e.g. 8.5000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Currency</label>
+              <select class="form-control" name="currency">
+                {% for cur in ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'BDT'] %}
+                <option value="{{ cur }}"
+                  {% if is_edit and shipment.currency == cur %}selected
+                  {% elif not is_edit and cur == 'USD' %}selected{% endif %}>{{ cur }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipping Details -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Shipping Details</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Port of Loading</label>
+              <input class="form-control" type="text" name="port_of_loading"
+                value="{{ shipment.port_of_loading or '' if is_edit else '' }}" placeholder="e.g. Chittagong">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Port of Discharge</label>
+              <input class="form-control" type="text" name="port_of_discharge"
+                value="{{ shipment.port_of_discharge or '' if is_edit else '' }}" placeholder="e.g. Los Angeles">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Vessel Name</label>
+              <input class="form-control" type="text" name="vessel_name"
+                value="{{ shipment.vessel_name or '' if is_edit else '' }}" placeholder="e.g. MSC DIANA">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bill of Lading (B/L) No.</label>
+              <input class="form-control" type="text" name="bl_number"
+                value="{{ shipment.bl_number or '' if is_edit else '' }}" placeholder="e.g. MSCU123456789">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">ETD</label>
+              <input class="form-control" type="date" name="etd"
+                value="{{ shipment.etd.isoformat() if is_edit and shipment.etd else '' }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">ETA</label>
+              <input class="form-control" type="date" name="eta"
+                value="{{ shipment.eta.isoformat() if is_edit and shipment.eta else '' }}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" name="remarks" rows="2"
+              placeholder="Special instructions or notes...">{{ shipment.remarks or '' if is_edit else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Invoice Details</span></div>
+        <div class="card-body">
+          {% if not is_edit %}
+          <div class="form-group">
+            <label class="form-label">Invoice No</label>
+            <input class="form-control" type="text" value="{{ next_invoice_no }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+            <div class="form-hint">Auto-generated on save</div>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label class="form-label">Invoice No</label>
+            <input class="form-control" type="text" value="{{ shipment.invoice_no }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status">
+              {% for st in ['draft','confirmed','shipped','delivered'] %}
+              <option value="{{ st }}" {% if shipment.status == st %}selected{% endif %}>{{ st | title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          {{ 'Save Changes' if is_edit else '&#128674; Create Invoice' }}
+        </button>
+        <a href="/shipments{% if is_edit %}/{{ shipment.id }}{% endif %}" class="btn btn-secondary btn-lg"
+          style="width:100%;justify-content:center;">Cancel</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

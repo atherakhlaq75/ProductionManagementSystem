@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block topbar_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/orders/new" class="btn btn-primary btn-sm">＋ New Order</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">Welcome, {{ current_user.full_name or current_user.username }}</div>
+    <div class="page-subtitle">Here's an overview of your production floor today.</div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card blue fade-in-up stagger-1">
+    <div class="stat-icon blue">📋</div>
+    <div class="stat-number" data-target="{{ order_count }}">0</div>
+    <div class="stat-label">Total Orders</div>
+  </div>
+  <div class="stat-card orange fade-in-up stagger-2">
+    <div class="stat-icon orange">⚙️</div>
+    <div class="stat-number" data-target="{{ pending_orders }}">0</div>
+    <div class="stat-label">Active / In Production</div>
+  </div>
+  <div class="stat-card green fade-in-up stagger-3">
+    <div class="stat-icon green">🚢</div>
+    <div class="stat-number" data-target="{{ shipment_count }}">0</div>
+    <div class="stat-label">Shipments</div>
+  </div>
+  <div class="stat-card purple fade-in-up stagger-4">
+    <div class="stat-icon purple">🏢</div>
+    <div class="stat-number" data-target="{{ customer_count }}">0</div>
+    <div class="stat-label">Customers</div>
+  </div>
+</div>
+
+<div class="stats-grid" style="margin-top:0;">
+  <div class="stat-card fade-in-up stagger-1">
+    <div class="stat-icon purple">🏷️</div>
+    <div class="stat-number" data-target="{{ brand_count }}">0</div>
+    <div class="stat-label">Brands</div>
+  </div>
+  <div class="stat-card fade-in-up stagger-2">
+    <div class="stat-icon blue">👗</div>
+    <div class="stat-number" data-target="{{ style_count }}">0</div>
+    <div class="stat-label">Garment Styles</div>
+  </div>
+  <div class="stat-card fade-in-up stagger-3">
+    <div class="stat-icon green">🏭</div>
+    <div class="stat-number" data-target="{{ line_count }}">0</div>
+    <div class="stat-label">Production Lines</div>
+  </div>
+  <div class="stat-card fade-in-up stagger-4">
+    <div class="stat-icon orange">⚙️</div>
+    <div class="stat-number" data-target="{{ production_count }}">0</div>
+    <div class="stat-label">Production Runs</div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-top:0;">
+  <div class="card fade-in-up">
+    <div class="card-header">
+      <span class="card-title">Recent Orders</span>
+      <a href="/orders" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+    <div style="overflow:hidden;">
+      {% if recent_orders %}
+      <table class="data-table">
+        <thead><tr><th>Order No</th><th>Customer</th><th>Qty</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for o in recent_orders %}
+          <tr>
+            <td><a href="/orders/{{ o.id }}" style="font-family:monospace;font-size:12px;">{{ o.order_no }}</a></td>
+            <td style="font-size:13px;">{{ o.customer.company_name if o.customer else '-' }}</td>
+            <td style="font-size:13px;">{{ "{:,}".format(o.order_qty) }}</td>
+            <td><span class="badge badge-{{ o.status }}">{{ o.status | replace('_',' ') | title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:32px;">
+        <div class="empty-icon">📋</div><p>No orders yet.</p>
+        <a href="/orders/new" class="btn btn-primary btn-sm">Create First Order</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card fade-in-up">
+    <div class="card-header">
+      <span class="card-title">Recent Shipments</span>
+      <a href="/shipments" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+    <div style="overflow:hidden;">
+      {% if recent_shipments %}
+      <table class="data-table">
+        <thead><tr><th>Invoice No</th><th>Customer</th><th>Qty</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for s in recent_shipments %}
+          <tr>
+            <td><a href="/shipments/{{ s.id }}" style="font-family:monospace;font-size:12px;">{{ s.invoice_no }}</a></td>
+            <td style="font-size:13px;">{{ s.order.customer.company_name if s.order and s.order.customer else '-' }}</td>
+            <td style="font-size:13px;">{{ "{:,}".format(s.shipped_qty) }}</td>
+            <td><span class="badge badge-{{ s.status }}">{{ s.status | title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:32px;">
+        <div class="empty-icon">🚢</div><p>No shipments yet.</p>
+        <a href="/shipments/new" class="btn btn-primary btn-sm">Create Shipment</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card fade-in-up" style="margin-top:24px;">
+  <div class="card-header"><span class="card-title">Quick Actions</span></div>
+  <div class="card-body">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="/orders/new"      class="btn btn-primary">📋 New Order</a>
+      <a href="/productions/new" class="btn btn-secondary">⚙️ Schedule Production</a>
+      <a href="/shipments/new"   class="btn btn-secondary">🚢 Create Shipment</a>
+      <a href="/customers/new"   class="btn btn-secondary">🏢 Add Customer</a>
+      <a href="/styles/new"      class="btn btn-secondary">👗 Add Style</a>
+      <a href="/lines/new"       class="btn btn-secondary">🏭 Add Production Line</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

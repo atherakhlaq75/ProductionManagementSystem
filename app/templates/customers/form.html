@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% set is_edit = customer is not none %}
+{% block title %}{{ 'Edit Customer' if is_edit else 'Add Customer' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Customer' if is_edit else 'Add Customer' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/customers" class="btn btn-secondary btn-sm">← Back to Customers</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit Customer' if is_edit else 'New Customer' }}</div>
+    <div class="page-subtitle">{{ 'Update customer information' if is_edit else 'Fill in the details to add a new customer' }}</div>
+  </div>
+</div>
+<form method="POST" action="{{ '/customers/' + customer.id|string + '/edit' if is_edit else '/customers/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;">
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Company Information</span></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Company Name <span style="color:var(--apple-red)">*</span></label>
+            <input class="form-control" type="text" name="company_name" required value="{{ customer.company_name if is_edit else '' }}" placeholder="e.g. Fashion Brands Inc.">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Contact Person</label>
+              <input class="form-control" type="text" name="contact_person" value="{{ customer.contact_person or '' if is_edit else '' }}" placeholder="Name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-control" type="email" name="email" value="{{ customer.email or '' if is_edit else '' }}" placeholder="buyer@brand.com">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input class="form-control" type="tel" name="phone" value="{{ customer.phone or '' if is_edit else '' }}" placeholder="+1 212 000 0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Terms</label>
+              <select class="form-control" name="payment_terms">
+                <option value="">Select...</option>
+                {% for pt in ['Net 30', 'Net 60', 'Net 90', 'LC at Sight', 'LC 60 Days', 'TT Advance', 'TT After Shipment', 'Open Account'] %}
+                <option value="{{ pt }}" {% if is_edit and customer.payment_terms == pt %}selected{% endif %}>{{ pt }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Address</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Country</label>
+              <input class="form-control" type="text" name="country" value="{{ customer.country or '' if is_edit else '' }}" placeholder="e.g. United States">
+            </div>
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input class="form-control" type="text" name="city" value="{{ customer.city or '' if is_edit else '' }}" placeholder="e.g. New York">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Address</label>
+            <textarea class="form-control" name="address" rows="3" placeholder="Street address, zip code...">{{ customer.address or '' if is_edit else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Record Details</span></div>
+        <div class="card-body">
+          {% if not is_edit %}
+          <div class="form-group">
+            <label class="form-label">Customer Code</label>
+            <input class="form-control" type="text" value="{{ next_code }}" disabled style="background:var(--apple-light-gray);font-family:monospace;">
+            <div class="form-hint">Auto-generated on save</div>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label class="form-label">Customer Code</label>
+            <input class="form-control" type="text" value="{{ customer.customer_code }}" disabled style="background:var(--apple-light-gray);font-family:monospace;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status">
+              <option value="active"   {% if customer.status == 'active' %}selected{% endif %}>Active</option>
+              <option value="inactive" {% if customer.status == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          {{ 'Save Changes' if is_edit else 'Add Customer' }}
+        </button>
+        <a href="/customers{% if is_edit %}/{{ customer.id }}{% endif %}" class="btn btn-secondary btn-lg" style="width:100%;justify-content:center;">Cancel</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

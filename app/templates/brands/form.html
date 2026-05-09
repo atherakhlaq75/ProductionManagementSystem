@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% set is_edit = brand is not none %}
+{% block title %}{{ 'Edit Brand' if is_edit else 'Add Brand' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Brand' if is_edit else 'Add Brand' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/brands" class="btn btn-secondary btn-sm">&#8592; Back to Brands</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit Brand' if is_edit else 'New Brand' }}</div>
+    <div class="page-subtitle">
+      {{ 'Update brand information and customer assignments' if is_edit
+         else 'Fill in the details and assign the brand to one or more customers' }}
+    </div>
+  </div>
+</div>
+
+<form method="POST" action="{{ '/brands/' + brand.id|string + '/edit' if is_edit else '/brands/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;">
+
+    <!-- ── Left column ────────────────────────────────────────────── -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+
+      <!-- Brand info -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Brand Information</span></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Brand Name <span style="color:var(--apple-red)">*</span></label>
+            <input class="form-control" type="text" name="brand_name" required
+              value="{{ brand.brand_name if is_edit else '' }}"
+              placeholder="e.g. Nike, Zara, H&amp;M">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Website</label>
+            <input class="form-control" type="url" name="website"
+              value="{{ brand.website or '' if is_edit else '' }}"
+              placeholder="https://www.brand.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="3"
+              placeholder="Brand notes, market segment, product focus...">{{ brand.description or '' if is_edit else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer assignment -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Customer Assignment</span>
+          <span style="font-size:12px;color:var(--apple-mid);">Select all customers this brand belongs to</span>
+        </div>
+        <div class="card-body">
+          {% if customers %}
+          <div style="display:flex;flex-direction:column;gap:0;">
+            {% for c in customers %}
+            <label style="display:flex;align-items:center;gap:12px;padding:12px 0;
+                          border-bottom:1px solid var(--apple-border);cursor:pointer;">
+              <input type="checkbox" name="customer_ids" value="{{ c.id }}"
+                {% if c.id in assigned_customer_ids %}checked{% endif %}
+                style="width:16px;height:16px;accent-color:var(--apple-blue);cursor:pointer;">
+              <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                <div class="avatar avatar-blue avatar-sm">{{ c.company_name[0] | upper }}</div>
+                <div>
+                  <div style="font-weight:600;font-size:14px;">{{ c.company_name }}</div>
+                  <div style="font-size:12px;color:var(--apple-mid);">
+                    {{ c.customer_code }}
+                    {% if c.country %}&nbsp;&middot;&nbsp;{{ c.country }}{% endif %}
+                  </div>
+                </div>
+              </div>
+              {% if c.id in assigned_customer_ids %}
+              <span class="badge badge-active" style="font-size:10px;">Assigned</span>
+              {% endif %}
+            </label>
+            {% endfor %}
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--apple-mid);">
+            &#9432;&nbsp; A brand can be shared across multiple customers. Tick all that apply.
+          </div>
+          {% else %}
+          <div class="empty-state" style="padding:24px;">
+            <div class="empty-icon">&#128102;</div>
+            <p>No active customers found.</p>
+            <a href="/customers/new" class="btn btn-secondary btn-sm">Add Customer First</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Right column ───────────────────────────────────────────── -->
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Record Details</span></div>
+        <div class="card-body">
+          {% if not is_edit %}
+          <div class="form-group">
+            <label class="form-label">Brand Code</label>
+            <input class="form-control" type="text" value="{{ next_code }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+            <div class="form-hint">Auto-generated on save</div>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label class="form-label">Brand Code</label>
+            <input class="form-control" type="text" value="{{ brand.brand_code }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status">
+              <option value="active"   {% if brand.status == 'active' %}selected{% endif %}>Active</option>
+              <option value="inactive" {% if brand.status == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Summary of selections -->
+      <div class="card" id="selection-summary">
+        <div class="card-header"><span class="card-title">Selected Customers</span></div>
+        <div class="card-body">
+          <div id="selected-list" style="display:flex;flex-direction:column;gap:6px;">
+            <span style="color:var(--apple-mid);font-size:13px;" id="none-msg">None selected</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          {{ '&#128190; Save Changes' if is_edit else '&#10003; Add Brand' }}
+        </button>
+        <a href="/brands{% if is_edit %}/{{ brand.id }}{% endif %}"
+          class="btn btn-secondary btn-lg" style="width:100%;justify-content:center;">Cancel</a>
+      </div>
+    </div>
+
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Live update the "Selected Customers" summary card
+  const checkboxes = document.querySelectorAll('input[name="customer_ids"]');
+  const selectedList = document.getElementById('selected-list');
+  const noneMsg = document.getElementById('none-msg');
+
+  function updateSummary() {
+    const checked = [...checkboxes].filter(cb => cb.checked);
+    noneMsg.style.display = checked.length ? 'none' : 'block';
+    // Remove old chips (keep the noneMsg span)
+    selectedList.querySelectorAll('.customer-chip').forEach(el => el.remove());
+    checked.forEach(cb => {
+      const label = cb.closest('label');
+      const name  = label.querySelector('[style*="font-weight:600"]').textContent.trim();
+      const chip  = document.createElement('div');
+      chip.className = 'customer-chip';
+      chip.style = 'display:flex;align-items:center;gap:8px;padding:6px 10px;' +
+                   'background:var(--apple-blue-light);border-radius:8px;';
+      chip.innerHTML = `<span style="font-size:13px;color:var(--apple-blue);font-weight:500;">${name}</span>`;
+      selectedList.appendChild(chip);
+    });
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateSummary));
+  updateSummary(); // run on load
+</script>
+{% endblock %}

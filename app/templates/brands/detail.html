@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}{{ brand.brand_name }}{% endblock %}
+{% block topbar_title %}Brand Detail{% endblock %}
+{% block topbar_actions %}
+  <a href="/brands/{{ brand.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+  <a href="/brands" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-purple" style="width:52px;height:52px;font-size:22px;">&#127991;&#65039;</div>
+      <div>
+        <div class="page-title">{{ brand.brand_name }}</div>
+        <div class="page-subtitle">
+          <code style="font-size:12px;background:var(--apple-light-gray);padding:2px 8px;border-radius:4px;">{{ brand.brand_code }}</code>
+          &nbsp;&middot;&nbsp;
+          <span class="badge badge-{{ brand.status }}">{{ brand.status | title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+  <!-- Brand Info -->
+  <div style="display:flex;flex-direction:column;gap:24px;">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Brand Information</span></div>
+      <div class="card-body">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--apple-border);">
+            <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:40%;">Brand Name</td>
+            <td style="padding:10px 0;font-size:13px;font-weight:600;">{{ brand.brand_name }}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--apple-border);">
+            <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;">Brand Code</td>
+            <td style="padding:10px 0;font-size:13px;">
+              <code style="background:var(--apple-light-gray);padding:2px 8px;border-radius:4px;">{{ brand.brand_code }}</code>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--apple-border);">
+            <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;">Website</td>
+            <td style="padding:10px 0;font-size:13px;">
+              {% if brand.website %}
+              <a href="{{ brand.website }}" target="_blank" style="color:var(--apple-blue);">
+                {{ brand.website | replace('https://','') | replace('http://','') }}
+              </a>
+              {% else %}&#8212;{% endif %}
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--apple-border);">
+            <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;">Status</td>
+            <td style="padding:10px 0;">
+              <span class="badge badge-{{ brand.status }}">{{ brand.status | title }}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;vertical-align:top;">Description</td>
+            <td style="padding:10px 0;font-size:13px;line-height:1.5;">{{ brand.description or '&#8212;' }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Assigned Customers -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Assigned Customers</span>
+        <span class="badge" style="background:var(--apple-light-gray);color:var(--apple-dark);font-size:11px;">
+          {{ brand.customer_brands | length }}
+        </span>
+      </div>
+      <div class="card-body">
+        {% if brand.customer_brands %}
+        <div style="display:flex;flex-direction:column;gap:0;">
+          {% for cb in brand.customer_brands %}
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--apple-border);">
+            <div class="avatar avatar-blue avatar-sm">{{ cb.customer.company_name[0] | upper }}</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">{{ cb.customer.company_name }}</div>
+              <div style="font-size:12px;color:var(--apple-mid);">{{ cb.customer.customer_code }}
+                {% if cb.customer.country %}&nbsp;&middot;&nbsp;{{ cb.customer.country }}{% endif %}
+              </div>
+            </div>
+            <a href="/customers/{{ cb.customer.id }}" class="btn btn-secondary btn-sm" style="margin-left:auto;">View</a>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div style="padding:16px 0;text-align:center;color:var(--apple-mid);font-size:13px;">
+          No customers assigned to this brand.
+          <a href="/brands/{{ brand.id }}/edit" style="color:var(--apple-blue);">Assign customers</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Garment Styles -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Garment Styles</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge" style="background:var(--apple-light-gray);color:var(--apple-dark);font-size:11px;">
+          {{ brand.styles | length }}
+        </span>
+        <a href="/styles/new" class="btn btn-secondary btn-sm">+ Add Style</a>
+      </div>
+    </div>
+    {% if brand.styles %}
+    <div style="overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Style</th>
+            <th>Category</th>
+            <th>Season</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in brand.styles %}
+          <tr>
+            <td>
+              <div>
+                <div style="font-weight:600;font-size:13px;">
+                  <a href="/styles/{{ s.id }}" style="color:inherit;text-decoration:none;">{{ s.style_name }}</a>
+                </div>
+                <div style="font-size:11px;color:var(--apple-mid);font-family:monospace;">{{ s.style_no }}</div>
+              </div>
+            </td>
+            <td style="font-size:13px;">{{ s.category or '&#8212;' }}</td>
+            <td style="font-size:13px;">{{ s.season or '&#8212;' }}</td>
+            <td><span class="badge badge-{{ s.status }}">{{ s.status | title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="card-body">
+      <div class="empty-state" style="padding:24px;">
+        <div class="empty-icon">&#128247;</div>
+        <p style="font-size:13px;">No styles linked to this brand yet.</p>
+        <a href="/styles/new" class="btn btn-secondary btn-sm">Add First Style</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<div style="margin-top:20px;display:flex;gap:10px;">
+  <a href="/brands/{{ brand.id }}/edit" class="btn btn-primary">&#9998; Edit Brand</a>
+  <form id="del-brand" method="POST" action="/brands/{{ brand.id }}/delete" style="display:inline;">
+    <button type="button" class="btn btn-danger"
+      onclick="confirmDelete('del-brand', '{{ brand.brand_name }}')">Delete Brand</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ line.line_name }}{% endblock %}
+{% block topbar_title %}Production Line Detail{% endblock %}
+{% block topbar_actions %}
+  <a href="/lines/{{ line.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+  <a href="/lines" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-orange" style="width:52px;height:52px;font-size:22px;">&#127981;</div>
+      <div>
+        <div class="page-title">{{ line.line_name }}</div>
+        <div class="page-subtitle">{{ line.line_code }} &nbsp;&middot;&nbsp;
+          <span class="badge badge-{{ line.status }}">{{ line.status | title }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><span class="card-title">Line Details</span></div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+      <table style="border-collapse:collapse;">
+        {% for label, value in [('Line Type', line.line_type), ('Floor', line.floor), ('Supervisor', line.supervisor)] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:45%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <table style="border-collapse:collapse;">
+        {% for label, value in [
+          ('Capacity Per Day', ("{:,}".format(line.capacity_per_day) ~ ' PCS') if line.capacity_per_day else None),
+          ('Operator Count', line.operator_count),
+          ('Description', line.description)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:45%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+<div style="margin-top:20px;">
+  <a href="/productions/new" class="btn btn-primary">&#9881;&#65039; Schedule Production on this Line</a>
+</div>
+{% endblock %}

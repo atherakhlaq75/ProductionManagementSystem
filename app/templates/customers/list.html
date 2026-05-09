@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block topbar_title %}Customers{% endblock %}
+{% block topbar_actions %}
+  <a href="/customers/new" class="btn btn-primary btn-sm">+ Add Customer</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">Customers</div>
+    <div class="page-subtitle">{{ total }} customer{{ 's' if total != 1 }}</div>
+  </div>
+</div>
+<div class="toolbar">
+  <form method="GET" action="/customers" style="display:contents;">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" name="search" placeholder="Search by name, code or contact..." value="{{ search or '' }}">
+    </div>
+    <select class="form-control" name="status" style="width:auto;" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="active"   {% if selected_status == 'active' %}selected{% endif %}>Active</option>
+      <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    {% if search or selected_status %}
+    <a href="/customers" class="btn btn-secondary btn-sm">✕ Clear</a>
+    {% endif %}
+  </form>
+</div>
+{% if customers %}
+<div class="table-container fade-in-up">
+  <table class="data-table">
+    <thead>
+      <tr><th>Customer</th><th>Code</th><th>Country</th><th>Phone</th><th>Payment Terms</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar avatar-blue">{{ c.company_name[0] | upper }}</div>
+            <div>
+              <div style="font-weight:600;">{{ c.company_name }}</div>
+              <div style="font-size:12px;color:var(--apple-mid);">{{ c.contact_person or '-' }}</div>
+            </div>
+          </div>
+        </td>
+        <td><code style="font-size:12px;background:var(--apple-light-gray);padding:2px 8px;border-radius:4px;">{{ c.customer_code }}</code></td>
+        <td style="font-size:13px;">{{ c.country or '-' }}</td>
+        <td style="font-size:13px;">{{ c.phone or '-' }}</td>
+        <td style="font-size:13px;">{{ c.payment_terms or '-' }}</td>
+        <td><span class="badge badge-{{ c.status }}">{{ c.status | title }}</span></td>
+        <td>
+          <div style="display:flex;justify-content:flex-end;gap:6px;">
+            <a href="/customers/{{ c.id }}" class="btn btn-secondary btn-sm">View</a>
+            <a href="/customers/{{ c.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+            <form id="del-{{ c.id }}" method="POST" action="/customers/{{ c.id }}/delete" style="display:inline;">
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('del-{{ c.id }}', '{{ c.company_name }}')">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><div class="empty-state">
+  <div class="empty-icon">🏢</div>
+  <h3>No customers found</h3>
+  <p>{% if search %}No results for "{{ search }}".{% else %}Start by adding your first customer.{% endif %}</p>
+  <a href="/customers/new" class="btn btn-primary">+ Add Customer</a>
+</div></div>
+{% endif %}
+{% endblock %}

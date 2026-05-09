@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Production Lines{% endblock %}
+{% block topbar_title %}Production Lines{% endblock %}
+{% block topbar_actions %}
+  <a href="/lines/new" class="btn btn-primary btn-sm">+ Add Line</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">Production Lines</div>
+    <div class="page-subtitle">{{ total }} line{{ 's' if total != 1 }} configured</div>
+  </div>
+</div>
+<div class="toolbar">
+  <form method="GET" action="/lines" style="display:contents;">
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input class="search-input" type="text" name="search" placeholder="Search by code, name or supervisor..." value="{{ search or '' }}">
+    </div>
+    <select class="form-control" name="status" style="width:auto;" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="active"      {% if selected_status == 'active' %}selected{% endif %}>Active</option>
+      <option value="inactive"    {% if selected_status == 'inactive' %}selected{% endif %}>Inactive</option>
+      <option value="maintenance" {% if selected_status == 'maintenance' %}selected{% endif %}>Maintenance</option>
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    {% if search or selected_status %}
+    <a href="/lines" class="btn btn-secondary btn-sm">&#10005; Clear</a>
+    {% endif %}
+  </form>
+</div>
+{% if lines %}
+<div class="table-container fade-in-up">
+  <table class="data-table">
+    <thead>
+      <tr><th>Line</th><th>Floor</th><th>Type</th><th>Capacity/Day</th><th>Operators</th><th>Supervisor</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for l in lines %}
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar avatar-orange">&#127981;</div>
+            <div>
+              <div style="font-weight:600;">{{ l.line_name }}</div>
+              <div style="font-size:12px;color:var(--apple-mid);font-family:monospace;">{{ l.line_code }}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:13px;">{{ l.floor or '&#8212;' }}</td>
+        <td style="font-size:13px;">{{ l.line_type or '&#8212;' }}</td>
+        <td style="font-size:13px;">{{ "{:,}".format(l.capacity_per_day) if l.capacity_per_day else '&#8212;' }}</td>
+        <td style="font-size:13px;">{{ l.operator_count or '&#8212;' }}</td>
+        <td style="font-size:13px;">{{ l.supervisor or '&#8212;' }}</td>
+        <td><span class="badge badge-{{ l.status }}">{{ l.status | title }}</span></td>
+        <td>
+          <div style="display:flex;justify-content:flex-end;gap:6px;">
+            <a href="/lines/{{ l.id }}" class="btn btn-secondary btn-sm">View</a>
+            <a href="/lines/{{ l.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+            <form id="del-{{ l.id }}" method="POST" action="/lines/{{ l.id }}/delete" style="display:inline;">
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('del-{{ l.id }}', '{{ l.line_name }}')">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><div class="empty-state">
+  <div class="empty-icon">&#127981;</div><h3>No production lines found</h3>
+  <p>{% if search %}No results for "{{ search }}".{% else %}Add your first production line to get started.{% endif %}</p>
+  <a href="/lines/new" class="btn btn-primary">+ Add Production Line</a>
+</div></div>
+{% endif %}
+{% endblock %}

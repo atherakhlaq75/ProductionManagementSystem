@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}{{ order.order_no }}{% endblock %}
+{% block topbar_title %}Order Detail{% endblock %}
+{% block topbar_actions %}
+  <a href="/productions/new?order_id={{ order.id }}" class="btn btn-primary btn-sm">&#9881;&#65039; Schedule Production</a>
+  <a href="/shipments/new?order_id={{ order.id }}" class="btn btn-secondary btn-sm">&#128674; Create Shipment</a>
+  <a href="/orders/{{ order.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+  <a href="/orders" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-blue" style="width:52px;height:52px;font-size:22px;">&#128203;</div>
+      <div>
+        <div class="page-title">{{ order.order_no }}</div>
+        <div class="page-subtitle">
+          PO: {{ order.po_number or '&#8212;' }} &nbsp;&middot;&nbsp;
+          <span class="badge badge-{{ order.status }}">{{ order.status | replace('_',' ') | title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="stats-grid">
+  <div class="stat-card blue fade-in-up stagger-1">
+    <div class="stat-icon blue">&#128203;</div>
+    <div class="stat-number">{{ "{:,}".format(order.order_qty) }}</div>
+    <div class="stat-label">Ordered Qty</div>
+  </div>
+  <div class="stat-card orange fade-in-up stagger-2">
+    <div class="stat-icon orange">&#9881;&#65039;</div>
+    <div class="stat-number">{{ "{:,}".format(order.produced_qty) }}</div>
+    <div class="stat-label">Produced Qty</div>
+  </div>
+  <div class="stat-card green fade-in-up stagger-3">
+    <div class="stat-icon green">&#128674;</div>
+    <div class="stat-number">{{ "{:,}".format(order.shipped_qty) }}</div>
+    <div class="stat-label">Shipped Qty</div>
+  </div>
+  <div class="stat-card purple fade-in-up stagger-4">
+    <div class="stat-icon purple">&#128176;</div>
+    <div class="stat-number" style="font-size:18px;">{{ order.currency }} {{ "{:,.2f}".format(order.total_value) }}</div>
+    <div class="stat-label">Order Value</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Order Information</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Customer', order.customer.company_name if order.customer else None),
+          ('Garment Style', (order.style.style_no ~ ' — ' ~ order.style.style_name) if order.style else None),
+          ('PO Number', order.po_number),
+          ('Order Date', order.order_date.strftime('%d %b %Y') if order.order_date else None),
+          ('Delivery Date', order.delivery_date.strftime('%d %b %Y') if order.delivery_date else None),
+          ('Unit Price', (order.currency ~ ' ' ~ "%.4f"|format(order.unit_price|float)) if order.unit_price else None),
+          ('Remarks', order.remarks)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:40%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <!-- Production Runs -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Production Runs</span>
+      <a href="/productions/new?order_id={{ order.id }}" class="btn btn-secondary btn-sm">+ Add</a>
+    </div>
+    <div style="overflow:hidden;">
+      {% if order.productions %}
+      <table class="data-table">
+        <thead><tr><th>Prod No</th><th>Line</th><th>Planned</th><th>Output</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in order.productions %}
+          <tr>
+            <td><a href="/productions/{{ p.id }}" style="font-size:12px;font-family:monospace;">{{ p.production_no }}</a></td>
+            <td style="font-size:12px;">{{ p.line.line_name if p.line else '&#8212;' }}</td>
+            <td style="font-size:12px;">{{ "{:,}".format(p.planned_qty) }}</td>
+            <td style="font-size:12px;">{{ "{:,}".format(p.output_qty or 0) }}</td>
+            <td><span class="badge badge-{{ p.status }}" style="font-size:10px;">{{ p.status | replace('_',' ') | title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:24px;">
+        <p>No production runs yet.</p>
+        <a href="/productions/new?order_id={{ order.id }}" class="btn btn-secondary btn-sm">Schedule Production</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Shipments -->
+<div class="card" style="margin-top:24px;">
+  <div class="card-header">
+    <span class="card-title">Shipments / Invoices</span>
+    <a href="/shipments/new?order_id={{ order.id }}" class="btn btn-secondary btn-sm">+ Add Shipment</a>
+  </div>
+  <div style="overflow:hidden;">
+    {% if order.shipments %}
+    <table class="data-table">
+      <thead><tr><th>Invoice No</th><th>Shipment Date</th><th>Shipped Qty</th><th>Cartons</th><th>B/L Number</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for s in order.shipments %}
+        <tr>
+          <td><a href="/shipments/{{ s.id }}" style="font-size:12px;font-family:monospace;">{{ s.invoice_no }}</a></td>
+          <td style="font-size:13px;">{{ s.shipment_date.strftime('%d %b %Y') if s.shipment_date else '&#8212;' }}</td>
+          <td style="font-size:13px;font-weight:600;">{{ "{:,}".format(s.shipped_qty) }}</td>
+          <td style="font-size:13px;">{{ s.carton_count or '&#8212;' }}</td>
+          <td style="font-size:12px;color:var(--apple-mid);">{{ s.bl_number or '&#8212;' }}</td>
+          <td><span class="badge badge-{{ s.status }}" style="font-size:10px;">{{ s.status | title }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state" style="padding:24px;">
+      <p>No shipments created yet.</p>
+      <a href="/shipments/new?order_id={{ order.id }}" class="btn btn-secondary btn-sm">Create Shipment</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

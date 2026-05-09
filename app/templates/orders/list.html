@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+{% block topbar_title %}Order Receipt{% endblock %}
+{% block topbar_actions %}
+  <a href="/orders/new" class="btn btn-primary btn-sm">+ New Order</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">Order Receipt</div>
+    <div class="page-subtitle">{{ total }} order{{ 's' if total != 1 }} in system</div>
+  </div>
+</div>
+<div class="toolbar">
+  <form method="GET" action="/orders" style="display:contents;">
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input class="search-input" type="text" name="search" placeholder="Search by order no or PO number..." value="{{ search or '' }}">
+    </div>
+    <select class="form-control" name="customer_id" style="width:auto;" onchange="this.form.submit()">
+      <option value="">All Customers</option>
+      {% for c in customers %}
+      <option value="{{ c.id }}" {% if selected_customer == c.id %}selected{% endif %}>{{ c.company_name }}</option>
+      {% endfor %}
+    </select>
+    <select class="form-control" name="status" style="width:auto;" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      {% for st in ['pending','confirmed','in_production','ready_to_ship','shipped','cancelled'] %}
+      <option value="{{ st }}" {% if selected_status == st %}selected{% endif %}>{{ st | replace('_',' ') | title }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    {% if search or selected_customer or selected_status %}
+    <a href="/orders" class="btn btn-secondary btn-sm">&#10005; Clear</a>
+    {% endif %}
+  </form>
+</div>
+{% if orders %}
+<div class="table-container fade-in-up">
+  <table class="data-table">
+    <thead>
+      <tr><th>Order No</th><th>Customer</th><th>Style</th><th>PO Number</th><th>Qty</th><th>Unit Price</th><th>Delivery</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td><a href="/orders/{{ o.id }}" style="font-family:monospace;font-size:12px;font-weight:600;">{{ o.order_no }}</a></td>
+        <td style="font-size:13px;">{{ o.customer.company_name if o.customer else '&#8212;' }}</td>
+        <td style="font-size:13px;">
+          <div>{{ o.style.style_name if o.style else '&#8212;' }}</div>
+          {% if o.style %}<div style="font-size:11px;color:var(--apple-mid);font-family:monospace;">{{ o.style.style_no }}</div>{% endif %}
+        </td>
+        <td style="font-size:12px;color:var(--apple-mid);">{{ o.po_number or '&#8212;' }}</td>
+        <td style="font-size:13px;font-weight:600;">{{ "{:,}".format(o.order_qty) }}</td>
+        <td style="font-size:13px;">{{ o.currency }} {{ "%.4f"|format(o.unit_price|float) }}</td>
+        <td style="font-size:13px;{% if o.delivery_date and o.delivery_date.strftime('%Y-%m-%d') < now %}color:var(--apple-red);{% endif %}">
+          {{ o.delivery_date.strftime('%d %b %Y') if o.delivery_date else '&#8212;' }}</td>
+        <td><span class="badge badge-{{ o.status }}">{{ o.status | replace('_',' ') | title }}</span></td>
+        <td>
+          <div style="display:flex;justify-content:flex-end;gap:6px;">
+            <a href="/orders/{{ o.id }}" class="btn btn-secondary btn-sm">View</a>
+            <a href="/orders/{{ o.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+            <form id="del-{{ o.id }}" method="POST" action="/orders/{{ o.id }}/delete" style="display:inline;">
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('del-{{ o.id }}', '{{ o.order_no }}')">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><div class="empty-state">
+  <div class="empty-icon">&#128203;</div><h3>No orders found</h3>
+  <p>{% if search %}No results for "{{ search }}".{% else %}Create your first customer order.{% endif %}</p>
+  <a href="/orders/new" class="btn btn-primary">+ New Order</a>
+</div></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GarmentFlow — Executive Summary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --blue:      #196bab;
+    --blue-dark: #0e4d85;
+    --blue-light:#e8f3fc;
+    --navy:      #0a2140;
+    --gray:      #6b7a8d;
+    --border:    #dde6ef;
+    --bg:        #f7fafd;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: #1a2a3a;
+    font-size: 14px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Page wrapper ── */
+  .page {
+    max-width: 860px;
+    margin: 48px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 40px rgba(10,33,64,.10);
+    overflow: hidden;
+  }
+
+  /* ── Cover header ── */
+  .cover {
+    background: linear-gradient(135deg, #0a2140 0%, #196bab 100%);
+    padding: 56px 56px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+  }
+  .cover-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .cover-logo-mark {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,.15);
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 900; color: #fff;
+    letter-spacing: -1px;
+  }
+  .cover-logo-text { color: #fff; }
+  .cover-logo-text .co-name { font-size: 18px; font-weight: 700; }
+  .cover-logo-text .co-sub  { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 1px; letter-spacing: .4px; }
+
+  .cover h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -.6px;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .cover-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,.65);
+    font-weight: 400;
+    margin-bottom: 32px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item {
+    border-left: 2px solid rgba(255,255,255,.3);
+    padding-left: 12px;
+  }
+  .cover-meta-item .label { font-size: 10px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1px; }
+  .cover-meta-item .value { font-size: 13px; color: #fff; font-weight: 600; margin-top: 2px; }
+
+  /* ── Body content ── */
+  .content { padding: 52px 56px; }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 44px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    width: 32px; height: 32px;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -.3px;
+  }
+
+  p { margin-bottom: 14px; color: #2c3e50; }
+
+  /* ── Sub-sections ── */
+  .sub-section { margin-bottom: 24px; }
+  .sub-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--blue);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 14px;
+    background: var(--blue);
+    border-radius: 2px;
+  }
+
+  /* ── Feature list ── */
+  .feature-list { list-style: none; padding: 0; }
+  .feature-list li {
+    padding: 8px 0 8px 20px;
+    border-bottom: 1px solid #f0f4f8;
+    position: relative;
+    color: #2c3e50;
+    font-size: 13.5px;
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-list li::before {
+    content: '›';
+    position: absolute; left: 4px;
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .feature-list li strong { color: var(--navy); font-weight: 600; }
+
+  /* ── Highlight box ── */
+  .highlight-box {
+    background: var(--blue-light);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    color: #1a3a5c;
+  }
+
+  /* ── Status chips ── */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 16px; }
+  .chip {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e8f3fc;
+    color: var(--blue-dark);
+    border: 1px solid rgba(25,107,171,.2);
+  }
+  .chip.arrow::after { content: ' →'; }
+
+  /* ── DB relationship table ── */
+  .rel-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  .rel-table thead tr { background: var(--navy); }
+  .rel-table thead th {
+    padding: 11px 16px;
+    text-align: left;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  .rel-table tbody tr { border-bottom: 1px solid var(--border); }
+  .rel-table tbody tr:last-child { border-bottom: none; }
+  .rel-table tbody tr:nth-child(even) { background: #f7fafd; }
+  .rel-table td { padding: 10px 16px; color: #2c3e50; vertical-align: top; }
+  .rel-table td:first-child { font-weight: 600; color: var(--navy); white-space: nowrap; }
+  .rel-table td .rel-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(25,107,171,.1);
+    color: var(--blue);
+    margin-right: 4px;
+  }
+
+  /* ── Tech stack table ── */
+  .tech-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tech-table thead tr { background: var(--navy); }
+  .tech-table thead th {
+    padding: 11px 16px;
+    text-align: left;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  .tech-table tbody tr { border-bottom: 1px solid var(--border); }
+  .tech-table tbody tr:last-child { border-bottom: none; }
+  .tech-table tbody tr:nth-child(even) { background: #f7fafd; }
+  .tech-table td { padding: 11px 16px; color: #2c3e50; }
+  .tech-table td:first-child { font-weight: 600; color: var(--navy); width: 38%; }
+
+  /* ── Security pills ── */
+  .security-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .security-item {
+    background: #f7fafd;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .security-item .s-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .security-item .s-title::before {
+    content: '🔒';
+    font-size: 13px;
+  }
+  .security-item .s-desc {
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    background: var(--navy);
+    padding: 24px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-left { color: rgba(255,255,255,.5); font-size: 11px; line-height: 1.6; }
+  .footer-right {
+    font-size: 11px;
+    color: rgba(255,255,255,.35);
+    text-align: right;
+  }
+  .version-badge {
+    display: inline-block;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 6px;
+    padding: 3px 10px;
+    color: rgba(255,255,255,.6);
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; border-radius: 0; margin: 0; max-width: 100%; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .rel-table thead tr, .tech-table thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ══ COVER ══ -->
+  <div class="cover">
+    <div class="cover-logo">
+      <div class="cover-logo-mark">CK</div>
+      <div class="cover-logo-text">
+        <div class="co-name">CKDL</div>
+        <div class="co-sub">Croydon Kowloon Designs Ltd.</div>
+      </div>
+    </div>
+    <h1>GarmentFlow</h1>
+    <div class="cover-sub">Production Order Management System — Executive Summary</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="label">Document Date</div>
+        <div class="value">9 May 2026</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Version</div>
+        <div class="value">1.0</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Classification</div>
+        <div class="value">Internal — Confidential</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Prepared By</div>
+        <div class="value">CKDL Information Technology</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BODY ══ -->
+  <div class="content">
+
+    <!-- 1. Objective -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">Project Objective</div>
+      </div>
+      <div class="highlight-box">
+        GarmentFlow is a purpose-built, web-based Production Order Management System developed exclusively for Croydon Kowloon Designs Ltd. (CKDL) to digitise and centralise the end-to-end garment manufacturing workflow.
+      </div>
+      <p>
+        The system replaces manual, spreadsheet-driven processes with a structured, role-controlled digital platform that provides real-time visibility across the full order lifecycle — from initial customer order receipt through production scheduling to final shipment and invoicing.
+      </p>
+      <p>
+        Key objectives of the system include:
+      </p>
+      <ul class="feature-list">
+        <li>Eliminate data duplication and manual reconciliation between departments</li>
+        <li>Enforce accountability through a structured, group-based access control framework</li>
+        <li>Provide management with consolidated, real-time visibility of factory operations</li>
+        <li>Automate sequential status transitions across orders, production runs, and shipments</li>
+        <li>Maintain a single source of truth for customer, brand, style, and production line master data</li>
+        <li>Ensure auditability through timestamped records and system-generated reference numbers</li>
+      </ul>
+    </div>
+
+    <!-- 2. Admin Panel -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">Admin Panel — Functionality</div>
+      </div>
+      <p>
+        The Admin Panel is exclusively accessible to designated administrator accounts via a dedicated, segregated login portal. Administrator credentials are rejected at the general user login and vice versa, ensuring complete separation of the administrative interface from day-to-day operational use.
+      </p>
+
+      <div class="sub-section">
+        <div class="sub-title">Master Data Management</div>
+        <ul class="feature-list">
+          <li><strong>Customers</strong> — Maintain buyer profiles including company name, contact details, country, payment terms (Net 30, Letter of Credit, TT Advance), and active/inactive status. Each customer may be linked to multiple brands.</li>
+          <li><strong>Brands</strong> — Register buyer brands with unique code, description, and country of origin. Brands are linked to customers through a flexible many-to-many relationship.</li>
+          <li><strong>Garment Styles</strong> — Define full style specifications: style number, category (Shirt, Trouser, Jacket, T-Shirt, etc.), fabric type and composition, season code (e.g. SS26, AW26), gender, Standard Allowed Minutes (SAM), standard cost per unit, and buyer style reference. Each style is linked to a brand and optionally to a specific customer.</li>
+          <li><strong>Production Lines</strong> — Register factory production lines with line code, daily capacity (units/day), assigned supervisor, and operational status (Active / Maintenance / Inactive).</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">User &amp; Access Administration</div>
+        <ul class="feature-list">
+          <li><strong>User Management</strong> — Create, edit, and deactivate system user accounts. Each user is classified as Administrator or General User. Administrators are restricted to the Admin Panel; General Users access only the transaction modules. Self-deletion by an active administrator is prevented by the system.</li>
+          <li><strong>Groups &amp; Permissions</strong> — Define named permission groups with granular, module-level access flags:
+            <div class="chip-row" style="margin-top:8px;">
+              <span class="chip">Can Access Orders</span>
+              <span class="chip">Can Access Productions</span>
+              <span class="chip">Can Access Shipments</span>
+            </div>
+            Each general user is assigned to one or more groups. A user's access is determined by the cumulative permissions across all their active groups.
+          </li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">Admin Dashboard</div>
+        <p style="margin-bottom:0;">Provides a real-time system overview displaying total counts for: Users, Permission Groups, Customers, Brands, Garment Styles, and Production Lines. Quick-action shortcuts allow administrators to create new master data records or manage users and groups in a single click.</p>
+      </div>
+    </div>
+
+    <!-- 3. User Panel -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">User Panel — Functionality</div>
+      </div>
+      <p>
+        General users log in through the standard login portal and are directed to a personalised dashboard. Their accessible modules are governed entirely by the permission groups assigned by the administrator. The sidebar navigation displays all transaction modules, with access enforced at the route level.
+      </p>
+
+      <div class="sub-section">
+        <div class="sub-title">Order Receipt Module</div>
+        <ul class="feature-list">
+          <li>Create new customer orders with auto-generated, sequential reference numbers <strong>(ORD-YYYYMM####)</strong></li>
+          <li>Record buyer Purchase Order (PO) number, garment style, order quantity, unit price, and currency (USD, EUR, GBP, AUD, CAD, BDT)</li>
+          <li>Capture order date and required delivery date with overdue highlighting</li>
+          <li>Search and filter orders by customer, status, order number, or PO number</li>
+          <li>View detailed order records with linked production runs and shipment invoices</li>
+        </ul>
+        <p style="font-size:12.5px;color:var(--gray);margin-bottom:0;">Order lifecycle status progression:</p>
+        <div class="chip-row">
+          <span class="chip arrow">Pending</span>
+          <span class="chip arrow">Confirmed</span>
+          <span class="chip arrow">In Production</span>
+          <span class="chip arrow">Ready to Ship</span>
+          <span class="chip arrow">Shipped</span>
+          <span class="chip">Cancelled</span>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">Production Module</div>
+        <ul class="feature-list">
+          <li>Schedule production runs against confirmed orders with auto-generated numbers <strong>(PRD-YYYYMM####)</strong></li>
+          <li>Assign orders to specific production lines; record planned and actual start/end dates</li>
+          <li>Track output quantity (passed) and rejected quantity per run</li>
+          <li>System automatically calculates production efficiency (%) from planned vs. actual output</li>
+          <li>Completing a production run automatically advances the linked order to <em>"Ready to Ship"</em></li>
+        </ul>
+        <p style="font-size:12.5px;color:var(--gray);margin-bottom:0;">Production run status progression:</p>
+        <div class="chip-row">
+          <span class="chip arrow">Scheduled</span>
+          <span class="chip arrow">In Progress</span>
+          <span class="chip arrow">Completed</span>
+          <span class="chip arrow">On Hold</span>
+          <span class="chip">Cancelled</span>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">Shipment &amp; Invoice Module</div>
+        <ul class="feature-list">
+          <li>Create shipment invoices against orders with auto-generated numbers <strong>(INV-YYYYMM####)</strong></li>
+          <li>Record shipped quantity, carton count, net weight, and gross weight (KG)</li>
+          <li>Capture full shipping details: port of loading, port of discharge, vessel name, Bill of Lading (B/L) number, ETD, and ETA</li>
+          <li>Record invoice value (unit price × shipped quantity) in the applicable currency</li>
+          <li>Creating a shipment automatically advances the linked order status to <em>"Shipped"</em></li>
+        </ul>
+        <p style="font-size:12.5px;color:var(--gray);margin-bottom:0;">Shipment status progression:</p>
+        <div class="chip-row">
+          <span class="chip arrow">Draft</span>
+          <span class="chip arrow">Confirmed</span>
+          <span class="chip arrow">Shipped</span>
+          <span class="chip">Delivered</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Database Relationships -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-title">Database Relationships</div>
+      </div>
+      <p>
+        The system uses a fully relational PostgreSQL database. All tables are managed through SQLAlchemy ORM with defined foreign keys, cascade rules, and eager-loaded relationships. The schema is structured around the core order lifecycle, with master data entities feeding into transaction entities.
+      </p>
+      <table class="rel-table">
+        <thead>
+          <tr>
+            <th>Entity Relationship</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Customer ↔ Brand</td>
+            <td><span class="rel-type">M–M</span>via CustomerBrand</td>
+            <td>A buyer may carry multiple brands; a brand may be shared across multiple buyers.</td>
+          </tr>
+          <tr>
+            <td>Customer → Orders</td>
+            <td><span class="rel-type">1–M</span></td>
+            <td>Each order is raised against a single customer. A customer may have many orders over time.</td>
+          </tr>
+          <tr>
+            <td>GarmentStyle → Orders</td>
+            <td><span class="rel-type">1–M</span></td>
+            <td>Each order references a single garment style. A style may appear across multiple orders.</td>
+          </tr>
+          <tr>
+            <td>Brand → GarmentStyles</td>
+            <td><span class="rel-type">1–M</span></td>
+            <td>A brand owns multiple garment styles. Each style is linked to one brand.</td>
+          </tr>
+          <tr>
+            <td>Order → Productions</td>
+            <td><span class="rel-type">1–M</span></td>
+            <td>A single order can have multiple production runs — across different lines or time periods.</td>
+          </tr>
+          <tr>
+            <td>Order → Shipments</td>
+            <td><span class="rel-type">1–M</span></td>
+            <td>A single order can have multiple partial or full shipment invoices raised against it.</td>
+          </tr>
+          <tr>
+            <td>ProductionLine → Productions</td>
+            <td><span class="rel-type">1–M</span></td>
+            <td>Each production run is assigned to one production line. A line may run many batches.</td>
+          </tr>
+          <tr>
+            <td>User ↔ Group</td>
+            <td><span class="rel-type">M–M</span>via UserGroup</td>
+            <td>A user may belong to multiple permission groups. A group may contain many users. Access is determined by the union of group-level permission flags.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. Technology Stack -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-title">Technology Stack</div>
+      </div>
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Technology &amp; Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Backend Framework</td>
+            <td>FastAPI (Python 3.12) — asynchronous, high-performance web framework with automatic OpenAPI documentation</td>
+          </tr>
+          <tr>
+            <td>Database</td>
+            <td>PostgreSQL — open-source, ACID-compliant relational database management system</td>
+          </tr>
+          <tr>
+            <td>ORM &amp; Driver</td>
+            <td>SQLAlchemy 2.0 (async mode) with asyncpg driver — non-blocking database operations for high concurrency</td>
+          </tr>
+          <tr>
+            <td>Authentication</td>
+            <td>JWT (JSON Web Tokens) — HS256 algorithm, delivered as HttpOnly cookies; 8-hour session expiry</td>
+          </tr>
+          <tr>
+            <td>Password Security</td>
+            <td>bcrypt — industry-standard adaptive hashing algorithm with salt rounds</td>
+          </tr>
+          <tr>
+            <td>Templating Engine</td>
+            <td>Jinja2 — server-side HTML rendering with shared global context and template inheritance</td>
+          </tr>
+          <tr>
+            <td>Frontend</td>
+            <td>Custom CSS Design System — Apple-inspired, fully responsive; no frontend framework dependency</td>
+          </tr>
+          <tr>
+            <td>Web Server</td>
+            <td>Uvicorn (ASGI) — lightning-fast asynchronous server gateway interface</td>
+          </tr>
+          <tr>
+            <td>Configuration</td>
+            <td>Pydantic Settings — typed, validated configuration with .env file support</td>
+          </tr>
+          <tr>
+            <td>Middleware</td>
+            <td>Starlette BaseHTTPMiddleware — request-level access control enforcement before route handlers</td>
+          </tr>
+          <tr>
+            <td>Database Migrations</td>
+            <td>SQLAlchemy auto-create on startup + versioned manual SQL migration scripts</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 6. Security -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-title">Security Architecture</div>
+      </div>
+      <div class="security-grid">
+        <div class="security-item">
+          <div class="s-title">Dual Login Portals</div>
+          <div class="s-desc">Admin and general user logins are completely separated. Admin credentials are rejected at the general portal and vice versa, preventing privilege escalation.</div>
+        </div>
+        <div class="security-item">
+          <div class="s-title">Middleware Access Control</div>
+          <div class="s-desc">Every HTTP request is intercepted by AccessControlMiddleware before reaching route handlers. Unauthenticated requests are instantly redirected to the appropriate login page.</div>
+        </div>
+        <div class="security-item">
+          <div class="s-title">HttpOnly JWT Cookies</div>
+          <div class="s-desc">Authentication tokens are stored in HttpOnly cookies, making them inaccessible via JavaScript and protecting against XSS-based token theft. SameSite=Lax mitigates CSRF risk.</div>
+        </div>
+        <div class="security-item">
+          <div class="s-title">Group-Based Permissions</div>
+          <div class="s-desc">Module access is controlled through permission group assignments. Adding or removing a user from a group instantly changes their effective access — no code changes required.</div>
+        </div>
+        <div class="security-item">
+          <div class="s-title">Route-Level Protection</div>
+          <div class="s-desc">Admin routes (/admin, /customers, /brands, /styles, /lines) require administrator status. Transaction routes require an active authenticated session with a valid JWT.</div>
+        </div>
+        <div class="security-item">
+          <div class="s-title">Self-Delete Prevention</div>
+          <div class="s-desc">Administrators cannot delete their own account through the user management interface, preventing accidental lockout from the administration panel.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <div class="footer-left">
+      <div><strong style="color:rgba(255,255,255,.7);">Croydon Kowloon Designs Ltd. (CKDL)</strong></div>
+      <div>GarmentFlow — Production Order Management System</div>
+      <div>This document is prepared for internal use only and is strictly confidential.</div>
+    </div>
+    <div class="footer-right">
+      <div class="version-badge">Version 1.0</div>
+      <div>Document Date: 9 May 2026</div>
+      <div>CKDL Information Technology</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+</body>
+</html>

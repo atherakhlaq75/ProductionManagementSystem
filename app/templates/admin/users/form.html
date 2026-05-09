@@ -1,0 +1,135 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit User' if user else 'New User' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit User' if user else 'New User' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/admin/users" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit: ' + user.username if user else 'Create New User' }}</div>
+    <div class="page-subtitle">{{ 'Update account details and group assignments' if user else 'Fill in details to create a new account' }}</div>
+  </div>
+</div>
+
+<form method="POST" action="{{ '/admin/users/' + user.id|string + '/edit' if user else '/admin/users/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+    <!-- Account Details -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Account Details</span></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:18px;">
+
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          {% if user %}
+            <input class="form-control" type="text" value="{{ user.username }}" disabled style="background:#f0f4f8;color:#8aabca;">
+          {% else %}
+            <input class="form-control {% if errors.username %}is-invalid{% endif %}"
+                   type="text" name="username" value="{{ request.query_params.get('username','') }}"
+                   placeholder="e.g. john.doe" required>
+            {% if errors.username %}<div class="form-error">{{ errors.username }}</div>{% endif %}
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" type="text" name="full_name"
+                 value="{{ user.full_name or '' if user else '' }}" placeholder="Display name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-control {% if errors.email %}is-invalid{% endif %}"
+                 type="email" name="email"
+                 value="{{ user.email if user else '' }}" placeholder="user@company.com" required>
+          {% if errors.email %}<div class="form-error">{{ errors.email }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'New Password' if user else 'Password' }}
+            {% if user %}<span style="font-weight:400;color:#8aabca;">(leave blank to keep current)</span>{% endif %}
+          </label>
+          <input class="form-control {% if errors.password %}is-invalid{% endif %}"
+                 type="password" name="{{ 'new_password' if user else 'password' }}"
+                 placeholder="Min 6 characters" {{ 'required' if not user else '' }}>
+          {% if errors.password %}<div class="form-error">{{ errors.password }}</div>{% endif %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Access Settings -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Access Settings</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px;border:1.5px solid #d1dfe8;border-radius:10px;">
+            <input type="checkbox" name="is_admin" value="1" id="is_admin"
+                   {{ 'checked' if user and user.is_admin else '' }}
+                   style="width:18px;height:18px;accent-color:#c0392b;">
+            <div>
+              <div style="font-weight:700;color:#0a2140;font-size:14px;">Administrator</div>
+              <div style="font-size:12px;color:#8aabca;">Full access to Admin Panel &amp; masters. Cannot access transaction menus.</div>
+            </div>
+          </label>
+
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px;border:1.5px solid #d1dfe8;border-radius:10px;">
+            <input type="checkbox" name="is_active" value="1" id="is_active"
+                   {{ 'checked' if (not user) or user.is_active else '' }}
+                   style="width:18px;height:18px;accent-color:#196bab;">
+            <div>
+              <div style="font-weight:700;color:#0a2140;font-size:14px;">Account Active</div>
+              <div style="font-size:12px;color:#8aabca;">Inactive users cannot log in.</div>
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- Group Assignment -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Group Assignment</span>
+          <span style="font-size:12px;color:#8aabca;font-weight:400;">General users only</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+          {% if groups %}
+            {% set assigned_ids = user.user_groups | map(attribute='group_id') | list if user else [] %}
+            {% for g in groups %}
+            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:10px 12px;border:1.5px solid #d1dfe8;border-radius:10px;transition:border-color .15s;"
+                   onmouseover="this.style.borderColor='#196bab'" onmouseout="this.style.borderColor='#d1dfe8'">
+              <input type="checkbox" name="group_ids" value="{{ g.id }}"
+                     {{ 'checked' if g.id in assigned_ids else '' }}
+                     style="width:16px;height:16px;accent-color:#196bab;margin-top:2px;">
+              <div>
+                <div style="font-weight:600;color:#0a2140;font-size:13px;">{{ g.group_name }}
+                  <span style="font-weight:400;color:#8aabca;font-size:11px;">{{ g.group_code }}</span>
+                </div>
+                <div style="font-size:11px;color:#8aabca;margin-top:2px;">
+                  {% set perms = [] %}
+                  {% if g.can_access_orders %}{% set _ = perms.append('Orders') %}{% endif %}
+                  {% if g.can_access_productions %}{% set _ = perms.append('Productions') %}{% endif %}
+                  {% if g.can_access_shipments %}{% set _ = perms.append('Shipments') %}{% endif %}
+                  {{ perms | join(' · ') if perms else 'No permissions set' }}
+                </div>
+              </div>
+            </label>
+            {% endfor %}
+          {% else %}
+            <div style="color:#8aabca;font-size:13px;text-align:center;padding:16px 0;">
+              No groups yet. <a href="/admin/groups/new" style="color:#196bab;">Create a group</a> first.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;">
+    <button type="submit" class="btn btn-primary">{{ 'Save Changes' if user else 'Create User' }}</button>
+    <a href="/admin/users" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

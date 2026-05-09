@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Shipments{% endblock %}
+{% block topbar_title %}Shipment / Invoice{% endblock %}
+{% block topbar_actions %}
+  <a href="/shipments/new" class="btn btn-primary btn-sm">+ Create Shipment</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">Shipment &amp; Invoice</div>
+    <div class="page-subtitle">{{ total }} shipment{{ 's' if total != 1 }}</div>
+  </div>
+</div>
+<div class="toolbar">
+  <form method="GET" action="/shipments" style="display:contents;">
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input class="search-input" type="text" name="search" placeholder="Search by invoice no or B/L number..." value="{{ search or '' }}">
+    </div>
+    <select class="form-control" name="status" style="width:auto;" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      {% for st in ['draft','confirmed','shipped','delivered'] %}
+      <option value="{{ st }}" {% if selected_status == st %}selected{% endif %}>{{ st | title }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    {% if search or selected_status %}
+    <a href="/shipments" class="btn btn-secondary btn-sm">&#10005; Clear</a>
+    {% endif %}
+  </form>
+</div>
+{% if shipments %}
+<div class="table-container fade-in-up">
+  <table class="data-table">
+    <thead>
+      <tr><th>Invoice No</th><th>Order</th><th>Customer</th><th>Style</th><th>Ship Date</th><th>Qty</th><th>Invoice Value</th><th>B/L No</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for s in shipments %}
+      <tr>
+        <td><a href="/shipments/{{ s.id }}" style="font-family:monospace;font-size:12px;font-weight:600;">{{ s.invoice_no }}</a></td>
+        <td>
+          {% if s.order %}
+          <a href="/orders/{{ s.order.id }}" style="font-family:monospace;font-size:12px;">{{ s.order.order_no }}</a>
+          {% else %}&#8212;{% endif %}
+        </td>
+        <td style="font-size:13px;">{{ s.order.customer.company_name if s.order and s.order.customer else '&#8212;' }}</td>
+        <td style="font-size:12px;color:var(--apple-mid);">{{ s.order.style.style_name if s.order and s.order.style else '&#8212;' }}</td>
+        <td style="font-size:13px;">{{ s.shipment_date.strftime('%d %b %Y') if s.shipment_date else '&#8212;' }}</td>
+        <td style="font-size:13px;font-weight:600;">{{ "{:,}".format(s.shipped_qty) }}</td>
+        <td style="font-size:13px;">
+          {% if s.unit_price %}{{ s.currency }} {{ "{:,.2f}".format(s.invoice_value) }}{% else %}&#8212;{% endif %}
+        </td>
+        <td style="font-size:12px;color:var(--apple-mid);">{{ s.bl_number or '&#8212;' }}</td>
+        <td><span class="badge badge-{{ s.status }}">{{ s.status | title }}</span></td>
+        <td>
+          <div style="display:flex;justify-content:flex-end;gap:6px;">
+            <a href="/shipments/{{ s.id }}" class="btn btn-secondary btn-sm">View</a>
+            <a href="/shipments/{{ s.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+            <form id="del-{{ s.id }}" method="POST" action="/shipments/{{ s.id }}/delete" style="display:inline;">
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('del-{{ s.id }}', '{{ s.invoice_no }}')">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><div class="empty-state">
+  <div class="empty-icon">&#128674;</div><h3>No shipments found</h3>
+  <p>{% if search %}No results for "{{ search }}".{% else %}Create your first shipment invoice.{% endif %}</p>
+  <a href="/shipments/new" class="btn btn-primary">+ Create Shipment</a>
+</div></div>
+{% endif %}
+{% endblock %}

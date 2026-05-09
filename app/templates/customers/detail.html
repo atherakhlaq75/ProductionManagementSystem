@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ customer.company_name }}{% endblock %}
+{% block topbar_title %}Customer Detail{% endblock %}
+{% block topbar_actions %}
+  <a href="/customers/{{ customer.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+  <a href="/customers" class="btn btn-secondary btn-sm">← Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-blue" style="width:52px;height:52px;font-size:22px;">{{ customer.company_name[0] | upper }}</div>
+      <div>
+        <div class="page-title">{{ customer.company_name }}</div>
+        <div class="page-subtitle">{{ customer.customer_code }} &nbsp;·&nbsp; <span class="badge badge-{{ customer.status }}">{{ customer.status | title }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Contact Information</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [('Contact Person', customer.contact_person), ('Email', customer.email), ('Phone', customer.phone), ('Payment Terms', customer.payment_terms)] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:40%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Address</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [('Country', customer.country), ('City', customer.city), ('Address', customer.address)] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:40%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+<div style="margin-top:20px;">
+  <a href="/orders/new?customer_id={{ customer.id }}" class="btn btn-primary">📋 Create Order for this Customer</a>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit Group' if group else 'New Group' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Group' if group else 'New Group' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/admin/groups" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit: ' + group.group_name if group else 'Create Permission Group' }}</div>
+    <div class="page-subtitle">Define which transaction menus members of this group can access</div>
+  </div>
+</div>
+
+<form method="POST" action="{{ '/admin/groups/' + group.id|string + '/edit' if group else '/admin/groups/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+    <!-- Group Info -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Group Details</span></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:18px;">
+
+        <div class="form-group">
+          <label class="form-label">Group Code</label>
+          {% if group %}
+            <input class="form-control" type="text" value="{{ group.group_code }}" disabled
+                   style="background:#f0f4f8;color:#8aabca;">
+          {% else %}
+            <input class="form-control {% if errors.group_code %}is-invalid{% endif %}"
+                   type="text" name="group_code" value="{{ next_code }}"
+                   placeholder="e.g. GRP-001" required style="text-transform:uppercase;">
+            {% if errors.group_code %}<div class="form-error">{{ errors.group_code }}</div>{% endif %}
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Group Name</label>
+          <input class="form-control" type="text" name="group_name"
+                 value="{{ group.group_name if group else '' }}"
+                 placeholder="e.g. Sales Team" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description <span style="font-weight:400;color:#8aabca;">(optional)</span></label>
+          <textarea class="form-control" name="description" rows="3"
+                    placeholder="Brief description of this group's role">{{ group.description or '' if group else '' }}</textarea>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px;border:1.5px solid #d1dfe8;border-radius:10px;">
+          <input type="checkbox" name="is_active" value="1"
+                 {{ 'checked' if (not group) or group.is_active else '' }}
+                 style="width:18px;height:18px;accent-color:#196bab;">
+          <div>
+            <div style="font-weight:700;color:#0a2140;font-size:14px;">Group Active</div>
+            <div style="font-size:12px;color:#8aabca;">Inactive groups grant no permissions to members.</div>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- Permissions -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Transaction Permissions</span></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+        <p style="font-size:13px;color:#6b8aab;margin:0 0 8px;">
+          Check the modules members of this group should be able to access.
+          Admin users always have full master access regardless of groups.
+        </p>
+
+        <label style="display:flex;align-items:flex-start;gap:14px;cursor:pointer;padding:16px;border:1.5px solid #d1dfe8;border-radius:12px;transition:border-color .15s;"
+               onmouseover="this.style.borderColor='#196bab'" onmouseout="this.style.borderColor='#d1dfe8'">
+          <input type="checkbox" name="can_access_orders" value="1"
+                 {{ 'checked' if group and group.can_access_orders else '' }}
+                 style="width:18px;height:18px;accent-color:#196bab;margin-top:2px;">
+          <div>
+            <div style="font-weight:700;color:#0a2140;font-size:14px;">&#128203; Order Receipt</div>
+            <div style="font-size:12px;color:#8aabca;margin-top:3px;">
+              View, create, edit and manage customer orders.
+            </div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:14px;cursor:pointer;padding:16px;border:1.5px solid #d1dfe8;border-radius:12px;transition:border-color .15s;"
+               onmouseover="this.style.borderColor='#196bab'" onmouseout="this.style.borderColor='#d1dfe8'">
+          <input type="checkbox" name="can_access_productions" value="1"
+                 {{ 'checked' if group and group.can_access_productions else '' }}
+                 style="width:18px;height:18px;accent-color:#196bab;margin-top:2px;">
+          <div>
+            <div style="font-weight:700;color:#0a2140;font-size:14px;">&#9881;&#65039; Production</div>
+            <div style="font-size:12px;color:#8aabca;margin-top:3px;">
+              Track and manage production runs across lines.
+            </div>
+          </div>
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:14px;cursor:pointer;padding:16px;border:1.5px solid #d1dfe8;border-radius:12px;transition:border-color .15s;"
+               onmouseover="this.style.borderColor='#196bab'" onmouseout="this.style.borderColor='#d1dfe8'">
+          <input type="checkbox" name="can_access_shipments" value="1"
+                 {{ 'checked' if group and group.can_access_shipments else '' }}
+                 style="width:18px;height:18px;accent-color:#196bab;margin-top:2px;">
+          <div>
+            <div style="font-weight:700;color:#0a2140;font-size:14px;">&#128666; Shipment / Invoice</div>
+            <div style="font-size:12px;color:#8aabca;margin-top:3px;">
+              Create and manage shipments, invoices and B/L records.
+            </div>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;">
+    <button type="submit" class="btn btn-primary">{{ 'Save Changes' if group else 'Create Group' }}</button>
+    <a href="/admin/groups" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

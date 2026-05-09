@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ production.production_no }}{% endblock %}
+{% block topbar_title %}Production Detail{% endblock %}
+{% block topbar_actions %}
+  <a href="/productions/{{ production.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+  <a href="/productions" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-orange" style="width:52px;height:52px;font-size:22px;">&#9881;&#65039;</div>
+      <div>
+        <div class="page-title">{{ production.production_no }}</div>
+        <div class="page-subtitle">
+          <a href="/orders/{{ production.order.id }}">{{ production.order.order_no if production.order else '' }}</a>
+          &nbsp;&middot;&nbsp;
+          <span class="badge badge-{{ production.status }}">{{ production.status | replace('_',' ') | title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card blue fade-in-up stagger-1">
+    <div class="stat-icon blue">&#128203;</div>
+    <div class="stat-number">{{ "{:,}".format(production.planned_qty) }}</div>
+    <div class="stat-label">Planned Qty</div>
+  </div>
+  <div class="stat-card green fade-in-up stagger-2">
+    <div class="stat-icon green">&#10003;</div>
+    <div class="stat-number">{{ "{:,}".format(production.output_qty or 0) }}</div>
+    <div class="stat-label">Output (Passed)</div>
+  </div>
+  <div class="stat-card orange fade-in-up stagger-3">
+    <div class="stat-icon orange">&#10007;</div>
+    <div class="stat-number">{{ "{:,}".format(production.rejected_qty or 0) }}</div>
+    <div class="stat-label">Rejected Qty</div>
+  </div>
+  <div class="stat-card {% if production.efficiency >= 90 %}green{% elif production.efficiency >= 70 %}orange{% else %}purple{% endif %} fade-in-up stagger-4">
+    <div class="stat-icon {% if production.efficiency >= 90 %}green{% elif production.efficiency >= 70 %}orange{% else %}purple{% endif %}">&#128200;</div>
+    <div class="stat-number">{{ production.efficiency }}%</div>
+    <div class="stat-label">Efficiency</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Production Details</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Order', production.order.order_no if production.order else None),
+          ('Customer', production.order.customer.company_name if production.order and production.order.customer else None),
+          ('Style', (production.order.style.style_no ~ ' — ' ~ production.order.style.style_name) if production.order and production.order.style else None),
+          ('Production Line', (production.line.line_code ~ ' — ' ~ production.line.line_name) if production.line else None)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:40%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Schedule</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Planned Start', production.planned_start.strftime('%d %b %Y') if production.planned_start else None),
+          ('Planned End', production.planned_end.strftime('%d %b %Y') if production.planned_end else None),
+          ('Actual Start', production.actual_start.strftime('%d %b %Y') if production.actual_start else None),
+          ('Actual End', production.actual_end.strftime('%d %b %Y') if production.actual_end else None),
+          ('Remarks', production.remarks)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:40%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

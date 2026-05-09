@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — GarmentFlow</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body style="overflow:hidden;margin:0;">
+<div class="login-split">
+
+  <!-- LEFT: dark panel -->
+  <div class="login-panel-left" style="background:linear-gradient(160deg,#05111e 0%,#0a1f3a 45%,#0d2a4a 100%);">
+    <div class="login-factory-bg">
+      <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="mix-blend-mode:screen;opacity:.5;">
+        <!-- Grid -->
+        <line x1="0" y1="600" x2="400" y2="200" stroke="rgba(25,107,171,.12)" stroke-width="1"/>
+        <line x1="200" y1="600" x2="400" y2="200" stroke="rgba(25,107,171,.08)" stroke-width="1"/>
+        <line x1="400" y1="600" x2="400" y2="200" stroke="rgba(25,107,171,.12)" stroke-width="1"/>
+        <line x1="600" y1="600" x2="400" y2="200" stroke="rgba(25,107,171,.08)" stroke-width="1"/>
+        <line x1="800" y1="600" x2="400" y2="200" stroke="rgba(25,107,171,.12)" stroke-width="1"/>
+        <line x1="0" y1="600" x2="800" y2="600" stroke="rgba(25,107,171,.2)" stroke-width="2"/>
+        <line x1="0" y1="490" x2="800" y2="490" stroke="rgba(25,107,171,.1)" stroke-width="1"/>
+        <line x1="0" y1="380" x2="800" y2="380" stroke="rgba(25,107,171,.07)" stroke-width="1"/>
+        <!-- Shield icon -->
+        <path d="M400 80 L460 110 L460 180 Q460 230 400 260 Q340 230 340 180 L340 110 Z"
+              fill="rgba(25,107,171,.15)" stroke="rgba(25,107,171,.5)" stroke-width="2"/>
+        <path d="M400 110 L435 128 L435 178 Q435 210 400 228 Q365 210 365 178 L365 128 Z"
+              fill="rgba(25,107,171,.1)" stroke="rgba(25,107,171,.35)" stroke-width="1.5"/>
+        <text x="400" y="185" text-anchor="middle" fill="rgba(25,107,171,.7)" font-size="36" font-weight="900">A</text>
+        <!-- Ceiling beams -->
+        <rect x="0" y="0" width="800" height="8" fill="rgba(25,107,171,.3)"/>
+        <rect x="0" y="24" width="800" height="3" fill="rgba(25,107,171,.15)"/>
+        <!-- Lights -->
+        <rect x="180" y="0" width="50" height="14" rx="3" fill="rgba(220,240,255,.9)"/>
+        <ellipse cx="205" cy="14" rx="160" ry="70" fill="rgba(25,107,171,.08)"/>
+        <rect x="560" y="0" width="50" height="14" rx="3" fill="rgba(220,240,255,.9)"/>
+        <ellipse cx="585" cy="14" rx="160" ry="70" fill="rgba(25,107,171,.08)"/>
+      </svg>
+    </div>
+    <div class="login-panel-gradient"></div>
+    <div class="login-panel-brand">
+      <div class="login-panel-badge" style="border-color:rgba(255,100,100,.4);color:rgba(255,160,160,.85);">&#128274; Admin Access Only</div>
+      <div class="login-panel-title">Admin Panel</div>
+      <div class="login-panel-sub">Manage users, groups, and master data</div>
+      <div class="login-panel-stats">
+        <div class="login-stat">
+          <div class="login-stat-num">Masters</div>
+          <div class="login-stat-label">Customers, Brands, Styles, Lines</div>
+        </div>
+        <div class="login-stat">
+          <div class="login-stat-num">Access</div>
+          <div class="login-stat-label">Users &amp; Group Permissions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: login form -->
+  <div class="login-panel-right">
+    <div class="login-form-inner fade-in-up">
+      <img src="/static/img/ckdl-logo.svg" alt="CKDL" class="login-logo">
+
+      <div class="login-heading">Admin Sign In</div>
+      <div class="login-heading-sub">Enter your administrator credentials</div>
+
+      {% if error %}
+      <div class="login-error"><span>&#9888;</span> {{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="/admin/login">
+        <div class="login-field">
+          <label class="login-label" for="username">Username</label>
+          <input class="login-input" type="text" id="username" name="username"
+            placeholder="Admin username" autocomplete="username" required autofocus>
+        </div>
+        <div class="login-field">
+          <label class="login-label" for="password">Password</label>
+          <input class="login-input" type="password" id="password" name="password"
+            placeholder="Admin password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="login-btn" style="background:linear-gradient(135deg,#8b0000,#c0392b);">
+          Sign In to Admin &nbsp;&#10132;
+        </button>
+      </form>
+
+      <div class="login-divider"></div>
+      <div class="login-footer">
+        <a href="/login" style="color:#196bab;text-decoration:none;">&#8592; Back to General Login</a><br>
+        <span style="margin-top:6px;display:block;">&copy; 2025 Croydon Kowloon Designs Ltd.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

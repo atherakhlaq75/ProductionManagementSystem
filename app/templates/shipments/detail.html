@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ shipment.invoice_no }}{% endblock %}
+{% block topbar_title %}Shipment Invoice{% endblock %}
+{% block topbar_actions %}
+  <a href="/shipments/{{ shipment.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+  <a href="/shipments" class="btn btn-secondary btn-sm">&#8592; Back</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="avatar avatar-green" style="width:52px;height:52px;font-size:22px;">&#128674;</div>
+      <div>
+        <div class="page-title">{{ shipment.invoice_no }}</div>
+        <div class="page-subtitle">
+          {% if shipment.order %}
+          <a href="/orders/{{ shipment.order.id }}">{{ shipment.order.order_no }}</a> &nbsp;&middot;&nbsp;
+          {% endif %}
+          <span class="badge badge-{{ shipment.status }}">{{ shipment.status | title }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="stats-grid">
+  <div class="stat-card blue fade-in-up stagger-1">
+    <div class="stat-icon blue">&#128203;</div>
+    <div class="stat-number">{{ "{:,}".format(shipment.shipped_qty) }}</div>
+    <div class="stat-label">Shipped Qty</div>
+  </div>
+  <div class="stat-card orange fade-in-up stagger-2">
+    <div class="stat-icon orange">&#128230;</div>
+    <div class="stat-number">{{ shipment.carton_count or '&#8212;' }}</div>
+    <div class="stat-label">Cartons</div>
+  </div>
+  <div class="stat-card green fade-in-up stagger-3">
+    <div class="stat-icon green">&#128176;</div>
+    <div class="stat-number" style="font-size:18px;">
+      {% if shipment.unit_price %}{{ shipment.currency }} {{ "{:,.2f}".format(shipment.invoice_value) }}{% else %}&#8212;{% endif %}
+    </div>
+    <div class="stat-label">Invoice Value</div>
+  </div>
+  <div class="stat-card purple fade-in-up stagger-4">
+    <div class="stat-icon purple">&#9875;</div>
+    <div class="stat-number" style="font-size:18px;">
+      {{ "{:,.2f}".format(shipment.net_weight_kg|float) ~ ' KG' if shipment.net_weight_kg else '&#8212;' }}
+    </div>
+    <div class="stat-label">Net Weight</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <!-- Order Info -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">Order Information</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Customer', shipment.order.customer.company_name if shipment.order and shipment.order.customer else None),
+          ('Order No', shipment.order.order_no if shipment.order else None),
+          ('Garment Style', (shipment.order.style.style_no ~ ' — ' ~ shipment.order.style.style_name) if shipment.order and shipment.order.style else None),
+          ('PO Number', shipment.order.po_number if shipment.order else None),
+          ('Unit Price', (shipment.currency ~ ' ' ~ "%.4f"|format(shipment.unit_price|float)) if shipment.unit_price else None),
+          ('Shipment Date', shipment.shipment_date.strftime('%d %b %Y') if shipment.shipment_date else None)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:42%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <!-- Shipping Details -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">Shipping Details</span></div>
+    <div class="card-body">
+      <table style="width:100%;border-collapse:collapse;">
+        {% for label, value in [
+          ('Port of Loading', shipment.port_of_loading),
+          ('Port of Discharge', shipment.port_of_discharge),
+          ('Vessel Name', shipment.vessel_name),
+          ('B/L Number', shipment.bl_number),
+          ('ETD', shipment.etd.strftime('%d %b %Y') if shipment.etd else None),
+          ('ETA', shipment.eta.strftime('%d %b %Y') if shipment.eta else None),
+          ('Gross Weight', ("{:,.2f}".format(shipment.gross_weight_kg|float) ~ ' KG') if shipment.gross_weight_kg else None),
+          ('Remarks', shipment.remarks)
+        ] %}
+        <tr style="border-bottom:1px solid var(--apple-border);">
+          <td style="padding:10px 0;color:var(--apple-mid);font-size:13px;width:42%;">{{ label }}</td>
+          <td style="padding:10px 0;font-size:13px;font-weight:500;">{{ value or '&#8212;' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

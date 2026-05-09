@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% set is_edit = production is not none %}
+{% block title %}{{ 'Edit Production' if is_edit else 'Schedule Production' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Production Run' if is_edit else 'Schedule Production Run' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/productions" class="btn btn-secondary btn-sm">&#8592; Back to Production</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit Production Run' if is_edit else 'Schedule New Production Run' }}</div>
+    <div class="page-subtitle">{{ 'Update production details' if is_edit else 'Assign an order to a production line' }}</div>
+  </div>
+</div>
+<form method="POST" action="{{ '/productions/' + production.id|string + '/edit' if is_edit else '/productions/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;">
+    <div style="display:flex;flex-direction:column;gap:24px;">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Order &amp; Line Assignment</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Order <span style="color:var(--apple-red)">*</span></label>
+              <select class="form-control" name="order_id" required>
+                <option value="">Select order...</option>
+                {% for o in orders %}
+                <option value="{{ o.id }}"
+                  {% if is_edit and production.order_id == o.id %}selected
+                  {% elif preselected_order and preselected_order.id == o.id %}selected
+                  {% endif %}>
+                  {{ o.order_no }} &#8212; {{ o.customer.company_name if o.customer else '' }} / {{ o.style.style_name if o.style else '' }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Production Line <span style="color:var(--apple-red)">*</span></label>
+              <select class="form-control" name="line_id" required>
+                <option value="">Select line...</option>
+                {% for l in lines %}
+                <option value="{{ l.id }}" {% if is_edit and production.line_id == l.id %}selected{% endif %}>
+                  {{ l.line_code }} &#8212; {{ l.line_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Planned Quantity <span style="color:var(--apple-red)">*</span></label>
+            <input class="form-control" type="number" name="planned_qty" required min="1"
+              value="{{ production.planned_qty if is_edit else '' }}" placeholder="Quantity allocated to this run">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Schedule</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Planned Start Date</label>
+              <input class="form-control" type="date" name="planned_start"
+                value="{{ production.planned_start.isoformat() if is_edit and production.planned_start else '' }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Planned End Date</label>
+              <input class="form-control" type="date" name="planned_end"
+                value="{{ production.planned_end.isoformat() if is_edit and production.planned_end else '' }}">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Actual Start Date</label>
+              <input class="form-control" type="date" name="actual_start"
+                value="{{ production.actual_start.isoformat() if is_edit and production.actual_start else '' }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Actual End Date</label>
+              <input class="form-control" type="date" name="actual_end"
+                value="{{ production.actual_end.isoformat() if is_edit and production.actual_end else '' }}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Output &amp; Quality</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Output Qty (Passed)</label>
+              <input class="form-control" type="number" name="output_qty" min="0"
+                value="{{ production.output_qty or 0 if is_edit else 0 }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rejected Qty</label>
+              <input class="form-control" type="number" name="rejected_qty" min="0"
+                value="{{ production.rejected_qty or 0 if is_edit else 0 }}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Remarks</label>
+            <textarea class="form-control" name="remarks" rows="2"
+              placeholder="Production notes...">{{ production.remarks or '' if is_edit else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Run Details</span></div>
+        <div class="card-body">
+          {% if not is_edit %}
+          <div class="form-group">
+            <label class="form-label">Production No</label>
+            <input class="form-control" type="text" value="{{ next_production_no }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+            <div class="form-hint">Auto-generated on save</div>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label class="form-label">Production No</label>
+            <input class="form-control" type="text" value="{{ production.production_no }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+          </div>
+          {% endif %}
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status">
+              {% for st in ['scheduled','in_progress','completed','on_hold','cancelled'] %}
+              <option value="{{ st }}"
+                {% if is_edit and production.status == st %}selected
+                {% elif not is_edit and st == 'scheduled' %}selected
+                {% endif %}>{{ st | replace('_',' ') | title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          {{ 'Save Changes' if is_edit else '&#9881;&#65039; Schedule Run' }}
+        </button>
+        <a href="/productions{% if is_edit %}/{{ production.id }}{% endif %}" class="btn btn-secondary btn-lg"
+          style="width:100%;justify-content:center;">Cancel</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

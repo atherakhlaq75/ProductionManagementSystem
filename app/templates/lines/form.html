@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% set is_edit = line is not none %}
+{% block title %}{{ 'Edit Line' if is_edit else 'Add Production Line' }}{% endblock %}
+{% block topbar_title %}{{ 'Edit Production Line' if is_edit else 'Add Production Line' }}{% endblock %}
+{% block topbar_actions %}
+  <a href="/lines" class="btn btn-secondary btn-sm">&#8592; Back to Lines</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-title">{{ 'Edit Production Line' if is_edit else 'New Production Line' }}</div>
+  </div>
+</div>
+<form method="POST" action="{{ '/lines/' + line.id|string + '/edit' if is_edit else '/lines/new' }}">
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Line Information</span></div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Line Name <span style="color:var(--apple-red)">*</span></label>
+            <input class="form-control" type="text" name="line_name" required
+              value="{{ line.line_name if is_edit else '' }}" placeholder="e.g. Sewing Line A">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Line Type</label>
+            <select class="form-control" name="line_type">
+              <option value="">Select...</option>
+              {% for lt in ['Sewing', 'Finishing', 'Cutting', 'Embroidery', 'Printing', 'Washing', 'Knitting', 'Other'] %}
+              <option value="{{ lt }}" {% if is_edit and line.line_type == lt %}selected{% endif %}>{{ lt }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Floor</label>
+            <input class="form-control" type="text" name="floor"
+              value="{{ line.floor or '' if is_edit else '' }}" placeholder="e.g. Floor 1, Ground Floor">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Supervisor</label>
+            <input class="form-control" type="text" name="supervisor"
+              value="{{ line.supervisor or '' if is_edit else '' }}" placeholder="Line supervisor name">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Capacity Per Day (PCS)</label>
+            <input class="form-control" type="number" name="capacity_per_day"
+              value="{{ line.capacity_per_day or '' if is_edit else '' }}" placeholder="e.g. 500">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Operator Count</label>
+            <input class="form-control" type="number" name="operator_count"
+              value="{{ line.operator_count or '' if is_edit else '' }}" placeholder="e.g. 40">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description / Notes</label>
+          <textarea class="form-control" name="description" rows="3"
+            placeholder="Any additional notes about this line...">{{ line.description or '' if is_edit else '' }}</textarea>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Record Details</span></div>
+        <div class="card-body">
+          {% if not is_edit %}
+          <div class="form-group">
+            <label class="form-label">Line Code</label>
+            <input class="form-control" type="text" value="{{ next_code }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+            <div class="form-hint">Auto-generated on save</div>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label class="form-label">Line Code</label>
+            <input class="form-control" type="text" value="{{ line.line_code }}" disabled
+              style="background:var(--apple-light-gray);font-family:monospace;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" name="status">
+              {% for st in ['active', 'inactive', 'maintenance'] %}
+              <option value="{{ st }}" {% if line.status == st %}selected{% endif %}>{{ st | title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+          {{ 'Save Changes' if is_edit else 'Add Line' }}
+        </button>
+        <a href="/lines{% if is_edit %}/{{ line.id }}{% endif %}" class="btn btn-secondary btn-lg"
+          style="width:100%;justify-content:center;">Cancel</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
